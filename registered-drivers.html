@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Registered Drivers & Trips</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <style>
+    :root {
+      --bg-main: #f1f5f9;
+      --bg-sidebar: rgba(17, 24, 39, 0.8);
+      --bg-topbar: rgba(255, 255, 255, 0.8);
+      --text-color: #1f2937;
+      --card-bg: rgba(255, 255, 255, 0.3);
+    }
+
+    body.dark {
+      --bg-main: #1e293b;
+      --bg-sidebar: rgba(30, 41, 59, 0.95);
+      --bg-topbar: rgba(30, 41, 59, 0.95);
+      --text-color: #f8fafc;
+      --card-bg: rgba(51, 65, 85, 0.5);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      min-height: 100vh;
+      background-color: var(--bg-main);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 240px;
+      background: var(--bg-sidebar);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      padding: 18px 10px;
+      font-size: 18px;
+      background: rgba(31, 41, 55, 0.9);
+    }
+
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+
+    .nav-link {
+      padding: 12px 20px;
+      font-size: 15px;
+      color: #cbd5e0;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 4px solid transparent;
+    }
+
+    .nav-link:hover {
+      background-color: rgba(255,255,255,0.1);
+      color: #fff;
+      border-left: 4px solid #60a5fa;
+      padding-left: 26px;
+    }
+
+    .nav-link.active {
+      background-color: #2563eb;
+      color: #ffffff;
+      border-left: 4px solid #3b82f6;
+    }
+
+    /* Main content */
+    .main {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--card-bg);
+    }
+
+    .topbar {
+      background: var(--bg-topbar);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .topbar h1 {
+      font-size: 20px;
+      color: var(--text-color);
+    }
+
+    .dark-mode-toggle {
+      background: #1f2937;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+
+    .logout-btn {
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      font-size: 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .content {
+      padding: 20px 40px;
+      flex-grow: 1;
+      overflow-y: auto;
+    }
+
+    /* Table and search */
+    #searchInput {
+      margin-top: 10px;
+      padding: 10px;
+      width: 100%;
+      box-sizing: border-box;
+      font-size: 1rem;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      margin-top: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px;
+      border: 1px solid #ccc;
+      text-align: left;
+    }
+
+    th {
+      background: #333;
+      color: white;
+    }
+
+    .delete-driver {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .delete-driver:hover {
+      background-color: #b71c1c;
+    }
+
+    .view-details {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    .view-details:hover {
+      background: #0056b3;
+    }
+
+    /* Modal */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+
+    .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      max-width: 600px;
+      width: 100%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+
+    .modal-content h4 {
+      margin-top: 0;
+    }
+
+    .close-modal {
+      background: #e53935;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>CTU Admin</h2>
+    <nav>
+      <a href="vehicle-reservations.html" class="nav-link"><i class="fas fa-car"></i><span class="link-text">Vehicle Reservations</span></a>
+      <a href="manage-vehicles.html" class="nav-link"><i class="fas fa-tools"></i><span class="link-text">Manage Vehicles</span></a>
+      <a href="registered-drivers.html" class="nav-link active"><i class="fas fa-id-badge"></i><span class="link-text">Registered Drivers</span></a>
+      <a href="confirmed-reservations.html" class="nav-link"><i class="fas fa-check-circle"></i><span class="link-text">Confirmed Reservations</span></a>
+      <a href="complete.html" class="nav-link"><i class="fas fa-file-alt"></i><span class="link-text">Complete</span></a>
+      <a href="ontrip.html" class="nav-link"><i class="fas fa-route"></i><span class="link-text">On Trip</span></a>
+      <a href="change-password.html" class="nav-link"><i class="fas fa-key"></i><span class="link-text">Change Password</span></a>
+    </nav>
+  </div>
+
+  <!-- Main content -->
+  <div class="main">
+    <div class="topbar">
+      <h1>Registered Drivers & Trips</h1>
+      <div>
+        <button class="dark-mode-toggle" onclick="toggleDarkMode()">Dark Mode</button>
+        <button id="logout" class="logout-btn">Logout</button>
+      </div>
+    </div>
+    <div class="content">
+      <input type="text" id="searchInput" placeholder="Search by name or email..." />
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Trips</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="driverList">
+          <tr><td colspan="4">Loading...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="tripModal">
+    <div class="modal-content">
+      <button class="close-modal" onclick="closeModal()">Close</button>
+      <h4>Trip Details</h4>
+      <table id="tripDetailsTable" style="width:100%; border-collapse: collapse; margin-top:10px;">
+        <thead>
+          <tr>
+            <th>Vehicle</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+    import { getDatabase, ref, onValue, remove } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
+      authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
+      databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
+      projectId: "vehicle-management-syste-8f7fe",
+      storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
+      messagingSenderId: "423136689247",
+      appId: "1:423136689247:web:47dc93d0a171f06f096fea",
+      measurementId: "G-PF0808T11H"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const driverRef = ref(db, 'drivers');
+    const tripRef = ref(db, 'reservations');
+
+    const driverList = document.getElementById('driverList');
+    const searchInput = document.getElementById('searchInput');
+    const tripModal = document.getElementById('tripModal');
+    const tripDetailsTable = document.querySelector('#tripDetailsTable tbody');
+
+    let allDrivers = {}, allTrips = {};
+
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        alert("Please log in first.");
+        window.location.href = "admin-login.html";
+      } else {
+        loadData();
+      }
+    });
+
+    function loadData() {
+      onValue(tripRef, tsnap => {
+        allTrips = tsnap.val() || {};
+        onValue(driverRef, dsnap => {
+          allDrivers = dsnap.val() || {};
+          renderDrivers();
+        });
+      });
+    }
+
+    function renderDrivers() {
+      const query = searchInput.value.trim().toLowerCase();
+      driverList.innerHTML = '';
+
+      const filtered = Object.entries(allDrivers)
+        .filter(([_, d]) => d.name.toLowerCase().includes(query) || d.email.toLowerCase().includes(query));
+
+      if (filtered.length === 0) {
+        driverList.innerHTML = "<tr><td colspan='4'>No drivers found.</td></tr>";
+        return;
+      }
+
+      filtered.forEach(([id, driver]) => {
+        const trips = Object.values(allTrips).filter(tr => tr.driverEmail === driver.email);
+        const statusCount = trips.reduce((acc, t) => {
+          acc[t.status] = (acc[t.status]||0) + 1;
+          return acc;
+        }, {});
+        const tripSummary = Object.entries(statusCount).map(([s, c]) => `${c} ${s}`).join(', ') || 'No trips';
+
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${driver.name}</td>
+          <td>${driver.email}</td>
+          <td>${tripSummary}</td>
+          <td>
+            <button class="view-details">View Details</button>
+            <button class="delete-driver">Delete</button>
+          </td>
+        `;
+
+        row.querySelector('.view-details').onclick = () => openModal(trips, driver.name);
+        row.querySelector('.delete-driver').onclick = () => {
+          if (confirm(`Delete ${driver.name}?`)) remove(ref(db, 'drivers/' + id));
+        };
+        driverList.appendChild(row);
+      });
+    }
+
+    function openModal(trips, driverName) {
+      tripDetailsTable.innerHTML = '';
+      if (trips.length === 0) {
+        tripDetailsTable.innerHTML = '<tr><td colspan="3">No trips found.</td></tr>';
+      } else {
+        trips.forEach(tr => {
+          const trEl = document.createElement('tr');
+          trEl.innerHTML = `
+            <td>${tr.vehicle || 'N/A'}</td>
+            <td>${tr.date || 'N/A'}</td>
+            <td>${tr.status || 'N/A'}</td>`;
+          tripDetailsTable.appendChild(trEl);
+        });
+      }
+      tripModal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      tripModal.style.display = 'none';
+    }
+
+    searchInput.addEventListener('input', renderDrivers);
+
+    document.getElementById('logout').onclick = () => {
+      signOut(auth).then(() => {
+        window.location.href = "admin-login.html";
+      });
+    };
+
+    window.closeModal = closeModal;
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+  </script>
+</body>
+</html>

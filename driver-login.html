@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Driver Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <style>
+    * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+    body {
+      background: linear-gradient(to right, #e0eafc, #cfdef3);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      padding: 40px 30px;
+      border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+      text-align: center;
+    }
+
+    h2 { color: #1e3a8a; margin-bottom: 25px; }
+
+    input {
+      width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px;
+      transition: border-color 0.3s ease;
+    }
+    input:focus { border-color: #1e3a8a; outline: none; }
+
+    .password-container { position: relative; }
+    .password-container i {
+      position: absolute; top: 50%; right: 12px;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #1e3a8a;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%; padding: 12px; margin-top: 15px;
+      background-color: #1e3a8a; color: white; border: none; border-radius: 6px;
+      font-size: 16px; cursor: pointer; transition: background 0.3s ease;
+    }
+    button:hover { background-color: #142d75; }
+
+    #message { margin-top: 15px; color: red; font-size: 14px; }
+
+    .register-link { display: inline-block; margin-top: 20px; text-decoration: none; font-size: 14px; color: #1e3a8a; }
+    .register-link:hover { text-decoration: underline; }
+
+    @media (max-width: 480px) { .login-container { padding: 30px 20px; } }
+  </style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>Driver Login</h2>
+
+  <input type="email" id="email" placeholder="Driver Email" required />
+
+  <div class="password-container">
+    <input type="password" id="password" placeholder="Password" required />
+    <i id="togglePassword" class="fa-solid fa-eye"></i>
+  </div>
+
+  <button id="loginBtn">Login</button>
+
+  <p id="message"></p>
+  <a href="driver-register.html" class="register-link">Don't have an account? Register</a>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+  import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
+    authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
+    databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
+    projectId: "vehicle-management-syste-8f7fe",
+    storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
+    messagingSenderId: "423136689247",
+    appId: "1:423136689247:web:47dc93d0a171f06f096fea",
+    measurementId: "G-PF0808T11H"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const messageEl = document.getElementById("message");
+  const loginBtn = document.getElementById("loginBtn");
+  const togglePassword = document.getElementById("togglePassword");
+
+  togglePassword.addEventListener("click", () => {
+    const type = passwordInput.type === "password" ? "text" : "password";
+    passwordInput.type = type;
+    togglePassword.classList.toggle("fa-eye");
+    togglePassword.classList.toggle("fa-eye-slash");
+  });
+
+  function login() {
+    const email = emailInput.value;
+    const password = passwordInput.value;
+    messageEl.textContent = "";
+
+    if(!email || !password) {
+      messageEl.textContent = "Please enter email and password.";
+      return;
+    }
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then(userCredential => {
+        const uid = userCredential.user.uid;
+        return get(child(ref(db), `users/${uid}/role`));
+      })
+      .then(snapshot => {
+        if(snapshot.exists()){
+          const role = snapshot.val();
+          if(role === "driver"){
+            localStorage.setItem("driverEmail", email);
+            window.location.href = "driver.html";
+          } else {
+            messageEl.textContent = "Access denied: Only drivers can log in here.";
+          }
+        } else {
+          messageEl.textContent = "User role not defined.";
+        }
+      })
+      .catch(error => {
+        messageEl.textContent = "Login failed: " + error.message;
+      });
+  }
+
+  loginBtn.addEventListener("click", login);
+
+  [emailInput, passwordInput].forEach(input => {
+    input.addEventListener("keydown", (e) => {
+      if(e.key === "Enter") login();
+    });
+  });
+</script>
+
+</body>
+</html>

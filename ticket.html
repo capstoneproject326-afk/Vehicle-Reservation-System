@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Vehicle Ticket</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f1f5f9;
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+  }
+
+  .ticket {
+    background: #fff;
+    width: 500px;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+    display: flex;
+    flex-direction: column;
+    border-top: 6px solid #2563eb;
+  }
+
+  .ticket-header {
+    background: #2563eb;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+  }
+
+  .ticket-header i { margin-right: 10px; }
+
+  .ticket-body {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+  }
+
+  .ticket-info { flex: 2; }
+  .ticket-info p { margin: 8px 0; font-size: 16px; }
+
+  .qrcode { flex: 1; display: flex; justify-content: center; align-items: center; }
+
+  .print-btn {
+    margin: 15px;
+    padding: 10px 18px;
+    background: #28a745;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+
+  @media print {
+    body { background: white; }
+    .ticket { box-shadow: none; width: 100%; max-width: 600px; margin: 0 auto; }
+    .print-btn { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="ticket" id="ticketContent">
+  <div class="ticket-header"><i class="fas fa-car"></i>Vehicle Reservation Ticket</div>
+  <div class="ticket-body">
+    <div class="ticket-info" id="ticketInfo">Loading ticket...</div>
+    <div class="qrcode" id="qrcode"></div>
+  </div>
+  <button class="print-btn" onclick="window.print()">Print Ticket</button>
+</div>
+
+<!-- QRCode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
+  authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
+  databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
+  projectId: "vehicle-management-syste-8f7fe",
+  storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
+  messagingSenderId: "423136689247",
+  appId: "1:423136689247:web:47dc93d0a171f06f096fea",
+  measurementId: "G-PF0808T11H"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+
+const ticketInfo = document.getElementById('ticketInfo');
+const qrcodeDiv = document.getElementById('qrcode');
+
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    alert("Please log in first.");
+    window.location.href = "login.html";
+    return;
+  }
+
+  const ticketsRef = ref(db, `users/${user.uid}/tickets`);
+  onValue(ticketsRef, snapshot => {
+    const tickets = snapshot.val();
+    if (!tickets) {
+      ticketInfo.innerHTML = "<p>No Ticket Found</p>";
+      qrcodeDiv.innerHTML = "";
+      return;
+    }
+
+    // Filter only approved tickets
+    const approvedTickets = Object.values(tickets).filter(t => t.status === "approved");
+    if (approvedTickets.length === 0) {
+      ticketInfo.innerHTML = "<p>No Approved Ticket Found</p>";
+      qrcodeDiv.innerHTML = "";
+      return;
+    }
+
+    // Sort approved tickets by createdAt (descending)
+    const ticket = approvedTickets.sort((a,b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))[0];
+
+    ticketInfo.innerHTML = `
+      <p><strong>Date:</strong> ${ticket.date || 'N/A'}</p>
+      <p><strong>Destination:</strong> ${ticket.destination || 'N/A'}</p>
+      <p><strong>Passenger(s):</strong> ${ticket.passengers || 'N/A'}</p>
+      <p><strong>Vehicle:</strong> ${ticket.vehicle || 'N/A'}</p>
+      <p><strong>Plate Number:</strong> ${ticket.plate || 'N/A'}</p>
+      <p><strong>Driver:</strong> ${ticket.driver || 'N/A'}</p>
+    `;
+
+    qrcodeDiv.innerHTML = "";
+    new QRCode(qrcodeDiv, {
+      text: `
+Reservation ID: ${ticket.reservationId || 'N/A'}
+Date: ${ticket.date || 'N/A'}
+Destination: ${ticket.destination || 'N/A'}
+Passenger(s): ${ticket.passengers || 'N/A'}
+Vehicle: ${ticket.vehicle || 'N/A'}
+Plate Number: ${ticket.plate || 'N/A'}
+Driver: ${ticket.driver || 'N/A'}
+      `.trim(),
+      width: 120,
+      height: 120
+    });
+  });
+});
+</script>
+</body>
+</html>
