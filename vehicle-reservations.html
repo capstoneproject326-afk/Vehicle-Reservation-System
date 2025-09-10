@@ -119,6 +119,7 @@ select, input[type="text"] { padding: 6px 12px; margin: 10px 10px 20px 0; border
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
@@ -139,6 +140,52 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 const reservationsRef = ref(db, 'reservations');
+
+// Init EmailJS
+emailjs.init("JDTpKSgZAsMlW1UBn"); // your public key
+
+// User notification
+// User notification
+function sendUserEmail(r) {
+  return emailjs.send("service_3nqm0a7", "template_9ikxm69", {
+    to_name: r.name,             
+    to_email: r.userEmail,       
+    date: r.date,
+    timeSlot: r.timeSlot,
+    vehicle: r.vehicle,
+    plate: r.plate,
+    driver: r.driver,   // ✅ fixed: use driver directly
+    passengers: r.passengers,
+    destination: r.destination,
+    purpose: r.purpose,
+    status: r.status,
+    adminName: "CTU Transport Admin",
+    supportEmail: "ctutransport@ctu.edu.ph"
+  });
+}
+
+// Driver notification
+function sendDriverEmail(r) {
+  return emailjs.send("service_3nqm0a7", "template_oydgyee", {
+    to_email: r.driverEmail,  // 👈 send to driver’s email dynamically
+    to_name: r.driver,        // Driver’s name
+    name: r.name,             // Passenger’s name
+    date: r.date,
+    timeSlot: r.timeSlot,
+    vehicle: r.vehicle,
+    plate: r.plate,
+    destination: r.destination,
+    passengers: r.passengers,
+    department: r.department,
+    purpose: r.purpose,
+    status: r.status,
+    adminName: "CTU Transport Admin",
+    supportEmail: "ctutransport@ctu.edu.ph"
+  });
+}
+
+
+
 
 const statusFilter = document.getElementById('statusFilter');
 const reservationsContainer = document.getElementById('reservations');
@@ -212,9 +259,11 @@ function renderReservations() {
         approveBtn.className = 'btn btn-success';
         approveBtn.textContent = 'Approve';
         approveBtn.onclick = () => {
-          update(ref(db, `reservations/${r.id}`), { status: 'approved', notifyDriver: true })
+          update(ref(db, `reservations/${r.id}`), { status: 'approved' })
             .then(() => { 
-              alert("Reservation approved."); 
+              sendUserEmail({ ...r, status: 'approved' });
+              sendDriverEmail({ ...r, status: 'approved' });
+              alert("Reservation approved & notifications sent."); 
               renderReservations(); 
             });
         };
@@ -223,9 +272,11 @@ function renderReservations() {
         rejectBtn.className = 'btn btn-danger';
         rejectBtn.textContent = 'Reject';
         rejectBtn.onclick = () => {
-          update(ref(db, `reservations/${r.id}`), { status: 'rejected', notifyDriver: false })
+          update(ref(db, `reservations/${r.id}`), { status: 'rejected' })
             .then(() => { 
-              alert("Reservation rejected."); 
+              sendUserEmail({ ...r, status: 'rejected' });
+              sendDriverEmail({ ...r, status: 'rejected' });
+              alert("Reservation rejected & notifications sent."); 
               renderReservations(); 
             });
         };
