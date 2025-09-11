@@ -22,7 +22,7 @@
       background: #fff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
 
     label {
@@ -62,6 +62,10 @@
 
     #logoutBtn {
       background: #dc3545;
+    }
+
+    #logoutBtn:hover {
+      background: #c82333;
     }
 
     #myReservationsBtn {
@@ -115,9 +119,9 @@
 
     .vehicle-preview img {
       width: 100%;
-      height: 350px;
+      height: 250px;
       border-radius: 10px;
-      margin-bottom: 15px;
+      margin-bottom: 10px;
       object-fit: cover;
     }
 
@@ -138,6 +142,56 @@
       color: #999 !important;
       cursor: not-allowed !important;
     }
+
+    /* Booking Popup Overlay */
+    #popupOverlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+    }
+
+    /* Booking Popup Styles */
+    #bookingPopup {
+      display: none;
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      background: #fff;
+      padding: 20px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 70%;
+      overflow-y: auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+
+    #bookingPopup h3 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    #bookingPopup table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    #bookingPopup th, #bookingPopup td {
+      padding: 8px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+      font-size: 14px;
+    }
+
+    #showBookingsBtn {
+      margin-top: 10px;
+      max-width: 300px;
+    }
+
   </style>
 </head>
 <body>
@@ -145,86 +199,122 @@
   <h2>User Dashboard - Reserve a Vehicle</h2>
   <button id="logoutBtn">Logout</button>
   <button id="myReservationsBtn">My Reservations</button>
-<form id="reservationForm">
-  <label for="name">Name:</label>
-  <input type="text" id="name" required>
 
-  <div class="department-category">
-    <div>
-      <label for="department">Department:</label>
-      <select id="department" required>
-        <option value="">Select Department</option>
-        <option value="Supreme Student Government">Supreme Student Government</option>
-        <option value="TechnoGadget Organization">TechnoGadget Organization</option>
-        <option value="Educator's League">Educator's League</option>
-        <option value="Host Guild">Host Guild</option>
-        <option value="Engineering Society">Engineering Society</option>
-      </select>
+  <form id="reservationForm">
+    <label for="name">Name:</label>
+    <input type="text" id="name" required>
+
+    <div class="department-category">
+      <div>
+        <label for="department">Department:</label>
+        <select id="department" required>
+          <option value="">Select Department</option>
+          <option value="Supreme Student Government">Supreme Student Government</option>
+          <option value="TechnoGadget Organization">TechnoGadget Organization</option>
+          <option value="Educator's League">Educator's League</option>
+          <option value="Host Guild">Host Guild</option>
+          <option value="Engineering Society">Engineering Society</option>
+        </select>
+      </div>
+
+      <div class="category-group">
+        <label>Category:</label>
+        <input type="checkbox" id="faculty" value="Faculty" name="category">
+        <label for="faculty">Faculty</label>
+
+        <input type="checkbox" id="organization" value="Organization" name="category">
+        <label for="organization">Organization</label>
+
+        <input type="checkbox" id="staff" value="Staff" name="category">
+        <label for="staff">Staff</label>
+      </div>
     </div>
 
-    <div class="category-group">
-      <label>Category:</label>
-      <input type="checkbox" id="faculty" value="Faculty" name="category">
-      <label for="faculty">Faculty</label>
+    <label for="purpose">Purpose:</label>
+    <textarea id="purpose" required></textarea>
 
-      <input type="checkbox" id="organization" value="Organization" name="category">
-      <label for="organization">Organization</label>
+    <label for="destination">Destination:</label>
+    <input type="text" id="destination" required>
 
-      <input type="checkbox" id="staff" value="Staff" name="category">
-      <label for="staff">Staff</label>
+    <label for="tripType">Trip Type:</label>
+    <select id="tripType" required>
+      <option value="">Select Trip Type</option>
+      <option value="One Way">One Way</option>
+      <option value="Roundtrip">Roundtrip</option>
+    </select>
+
+    <label for="contact">Contact Info:</label>
+    <input type="text" id="contact" required>
+
+    <!-- Vehicle Section -->
+    <label for="vehicle">Vehicle:</label>
+    <select id="vehicle" required>
+      <option value="">Loading...</option>
+    </select>
+
+    <div class="vehicle-preview" id="vehiclePreview">
+      <img id="vehicleImage" src="" alt="Vehicle">
+      <div class="vehicle-info" id="vehicleSeats"></div>
+      <button type="button" id="showBookingsBtn">Show Booking on this Vehicle</button>
     </div>
+
+    <label for="driver">Driver:</label>
+    <select id="driver" required>
+      <option value="">Loading...</option>
+    </select>
+
+    <label for="date">Preferred Date:</label>
+    <input type="text" id="date" required>
+
+    <label for="timeSlot">Time Slot:</label>
+    <select id="timeSlot" required>
+      <option value="">Select</option>
+      <option value="8:00 AM - 10:00 AM">8:00 AM - 10:00 AM</option>
+      <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
+      <option value="1:00 PM - 3:00 PM">1:00 PM - 3:00 PM</option>
+      <option value="3:00 PM - 5:00 PM">3:00 PM - 5:00 PM</option>
+    </select>
+
+    <label for="passengers">No. of Passengers:</label>
+    <input type="number" id="passengers" min="1" required>
+
+    <button type="submit">Submit Reservation</button>
+  </form>
+
+  <!-- Booking Popup Overlay -->
+  <div id="popupOverlay"></div>
+
+  <!-- Booking Popup -->
+  <div id="bookingPopup">
+    <h3>Bookings for this Vehicle</h3>
+
+<!-- Filters -->
+<div style="margin-bottom:10px;">
+  <label for="filterDate">Filter by Date:</label>
+  <input type="date" id="filterDate" style="width:100%; padding:5px; margin-bottom:5px;">
+
+  <label for="filterDestination">Filter by Destination:</label>
+  <input type="text" id="filterDestination" placeholder="Enter destination" style="width:100%; padding:5px; margin-bottom:5px;">
+</div>
+
+
+
+
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Slot</th>
+          <th>Destination</th>
+          <th>Driver</th>
+          <th>Passengers</th>
+        </tr>
+      </thead>
+      <tbody id="bookingTableBody"></tbody>
+    </table>
+    <button id="closePopup" style="margin-top:10px; background:#dc3545;">Close</button>
   </div>
-
-  <label for="purpose">Purpose:</label>
-  <textarea id="purpose" required></textarea>
-
-  <label for="destination">Destination:</label>
-  <input type="text" id="destination" required>
-
-  <label for="tripType">Trip Type:</label>
-  <select id="tripType" required>
-    <option value="">Select Trip Type</option>
-    <option value="One Way">One Way</option>
-    <option value="Roundtrip">Roundtrip</option>
-  </select>
-
-  <label for="contact">Contact Info:</label>
-  <input type="text" id="contact" required>
-
-  <!-- Rearranged Section -->
-  <label for="vehicle">Vehicle:</label>
-  <select id="vehicle" required>
-    <option value="">Loading...</option>
-  </select>
-
-  <div class="vehicle-preview" id="vehiclePreview">
-    <img id="vehicleImage" src="" alt="Vehicle">
-    <div class="vehicle-info" id="vehicleSeats"></div>
-  </div>
-
-  <label for="driver">Driver:</label>
-  <select id="driver" required>
-    <option value="">Loading...</option>
-  </select>
-
-  <label for="date">Preferred Date:</label>
-  <input type="text" id="date" required>
-
-  <label for="timeSlot">Time Slot:</label>
-  <select id="timeSlot" required>
-    <option value="">Select</option>
-    <option value="8:00 AM - 10:00 AM">8:00 AM - 10:00 AM</option>
-    <option value="10:00 AM - 12:00 PM">10:00 AM - 12:00 PM</option>
-    <option value="1:00 PM - 3:00 PM">1:00 PM - 3:00 PM</option>
-    <option value="3:00 PM - 5:00 PM">3:00 PM - 5:00 PM</option>
-  </select>
-
-  <label for="passengers">No. of Passengers:</label>
-  <input type="number" id="passengers" min="1" required>
-
-  <button type="submit">Submit Reservation</button>
-</form>
-
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
   <script type="module">
@@ -256,11 +346,16 @@
     const vehicleSeats = document.getElementById("vehicleSeats");
     const timeSlotSelect = document.getElementById("timeSlot");
     const dateInput = document.getElementById("date");
+    const showBookingsBtn = document.getElementById("showBookingsBtn");
+    const bookingTableBody = document.getElementById("bookingTableBody");
+    const popupOverlay = document.getElementById("popupOverlay");
+    const bookingPopup = document.getElementById("bookingPopup");
+    const closePopup = document.getElementById("closePopup");
 
     function formatLocalDate(date) {
       const yyyy = date.getFullYear();
-      const mm = String(date.getMonth() + 1).padStart(2, '0');
-      const dd = String(date.getDate()).padStart(2, '0');
+      const mm = String(date.getMonth() + 1).padStart(2,'0');
+      const dd = String(date.getDate()).padStart(2,'0');
       return `${yyyy}-${mm}-${dd}`;
     }
 
@@ -268,221 +363,270 @@
       if (!user) window.location.href = "reserve.html";
     });
 
-    logoutBtn.onclick = () => signOut(auth).then(() => window.location.href = "reserve.html");
-    myReservationsBtn.onclick = () => window.location.href = "my-reservations.html";
+    logoutBtn.onclick = () => signOut(auth).then(() => window.location.href="reserve.html");
+    myReservationsBtn.onclick = () => window.location.href="my-reservations.html";
 
     // Load vehicles
-    get(ref(db, "vehicles")).then(snapshot => {
-      vehicleSelect.innerHTML = '<option value="">Select Vehicle</option>';
-      if (snapshot.exists()) {
-        Object.values(snapshot.val()).forEach(vehicle => {
-          const opt = document.createElement("option");
-          opt.value = JSON.stringify({
-            name: vehicle.name,
-            plate: vehicle.plate,
-            image: vehicle.photo,
-            seats: vehicle.seats
-          });
-          opt.textContent = `${vehicle.name} (${vehicle.plate})`;
+    get(ref(db,"vehicles")).then(snapshot=>{
+      vehicleSelect.innerHTML='<option value="">Select Vehicle</option>';
+      if(snapshot.exists()){
+        Object.values(snapshot.val()).forEach(vehicle=>{
+          const opt=document.createElement("option");
+          opt.value=JSON.stringify({name:vehicle.name,plate:vehicle.plate,image:vehicle.photo,seats:vehicle.seats});
+          opt.textContent=`${vehicle.name} (${vehicle.plate})`;
           vehicleSelect.appendChild(opt);
         });
       }
     });
 
-    vehicleSelect.addEventListener("change", () => {
-      if (!vehicleSelect.value) {
-        vehiclePreview.style.display = "none";
+    vehicleSelect.addEventListener("change",()=>{
+      if(!vehicleSelect.value){
+        vehiclePreview.style.display="none";
         updateTimeSlots();
         return;
       }
-      const v = JSON.parse(vehicleSelect.value);
-      vehicleImage.src = v.image ? (v.image.startsWith("data:image") ? v.image : "data:image/jpeg;base64," + v.image) : "";
-      vehicleSeats.textContent = v.seats ? `Number of seats: ${v.seats}` : "";
-      vehiclePreview.style.display = "block";
+      const v=JSON.parse(vehicleSelect.value);
+      vehicleImage.src=v.image?v.image.startsWith("data:image")?v.image:"data:image/jpeg;base64,"+v.image:"";
+      vehicleSeats.textContent=v.seats?`Number of seats: ${v.seats}`:"";
+      vehiclePreview.style.display="block";
       updateTimeSlots();
     });
 
     // Load drivers
-    get(ref(db, "drivers")).then(snapshot => {
-      driverSelect.innerHTML = '<option value="">Select Driver</option>';
-      if (snapshot.exists()) {
-        Object.values(snapshot.val()).forEach(driver => {
-          const opt = document.createElement("option");
-          opt.value = JSON.stringify({ name: driver.name, email: driver.email });
-          opt.textContent = driver.name;
+    get(ref(db,"drivers")).then(snapshot=>{
+      driverSelect.innerHTML='<option value="">Select Driver</option>';
+      if(snapshot.exists()){
+        Object.values(snapshot.val()).forEach(driver=>{
+          const opt=document.createElement("option");
+          opt.value=JSON.stringify({name:driver.name,email:driver.email});
+          opt.textContent=driver.name;
           driverSelect.appendChild(opt);
         });
       }
     });
 
-    driverSelect.addEventListener("change", updateTimeSlots);
-    dateInput.addEventListener("change", updateTimeSlots);
+    driverSelect.addEventListener("change",updateTimeSlots);
+    dateInput.addEventListener("change",updateTimeSlots);
 
-    // Flatpickr with seat-aware blocking
-    let bookedDates = {};
-    const fp = flatpickr("#date", {
-      dateFormat: "Y-m-d",
-      onDayCreate: function(dObj, dStr, fpObj, dayElem) {
-        const dateStr = formatLocalDate(dayElem.dateObj);
+    let bookedDates={};
+    const fp=flatpickr("#date",{dateFormat:"Y-m-d",onDayCreate:function(dObj,dStr,fpObj,dayElem){
+      const dateStr=formatLocalDate(dayElem.dateObj);
+      if(bookedDates[dateStr]){
+        const notes=bookedDates[dateStr].map(r=>`🚐 ${r.vehicle} - ${r.driver} (${r.timeSlot})`);
+        if(notes.length>0){
+          const dot=document.createElement("span");
+          dot.classList.add("note-dot");
+          dot.textContent="•";
+          dot.title=notes.join("\n");
+          dayElem.appendChild(dot);
+        }
 
-        if (bookedDates[dateStr]) {
-          const notes = bookedDates[dateStr].map(r => `🚐 ${r.vehicle} - ${r.driver} (${r.timeSlot})`);
-          if (notes.length > 0) {
-            const dot = document.createElement("span");
-            dot.classList.add("note-dot");
-            dot.textContent = "•";
-            dot.title = notes.join("\n");
-            dayElem.appendChild(dot);
-          }
-
-          // Disable fully booked dates
-          const selectedVehicle = vehicleSelect.value ? JSON.parse(vehicleSelect.value).name : null;
-          const selectedDriver = driverSelect.value ? JSON.parse(driverSelect.value).name : null;
-          if (selectedVehicle && selectedDriver) {
-            const slotsBooked = bookedDates[dateStr]
-              .filter(r => r.vehicle === selectedVehicle && r.driver === selectedDriver)
-              .map(r => r.timeSlot);
-
-            const allSlots = Array.from(timeSlotSelect.options).slice(1).map(opt => opt.value);
-            if (slotsBooked.length >= allSlots.length) {
-              dayElem.classList.add("flatpickr-disabled");
-            }
-          }
+        const selectedVehicle=vehicleSelect.value?JSON.parse(vehicleSelect.value).name:null;
+        const selectedDriver=driverSelect.value?JSON.parse(driverSelect.value).name:null;
+        if(selectedVehicle&&selectedDriver){
+          const slotsBooked=bookedDates[dateStr].filter(r=>r.vehicle===selectedVehicle&&r.driver===selectedDriver).map(r=>r.timeSlot);
+          const allSlots=Array.from(timeSlotSelect.options).slice(1).map(opt=>opt.value);
+          if(slotsBooked.length>=allSlots.length) dayElem.classList.add("flatpickr-disabled");
         }
       }
-    });
+    }});
 
-    // Load reservations
-    onValue(ref(db, "reservations"), snapshot => {
-      bookedDates = {};
-      if (snapshot.exists()) {
-        Object.values(snapshot.val()).forEach(r => {
-          if (!bookedDates[r.date]) bookedDates[r.date] = [];
-          bookedDates[r.date].push({
-            vehicle: r.vehicle,
-            driver: r.driver,
-            timeSlot: r.timeSlot,
-            seats: r.passengers
-          });
+    onValue(ref(db,"reservations"),snapshot=>{
+      bookedDates={};
+      if(snapshot.exists()){
+        Object.values(snapshot.val()).forEach(r=>{
+          if(!bookedDates[r.date]) bookedDates[r.date]=[];
+          bookedDates[r.date].push({vehicle:r.vehicle,driver:r.driver,timeSlot:r.timeSlot,seats:r.passengers,destination:r.destination});
         });
       }
       fp.redraw();
       updateTimeSlots();
     });
 
-    function updateTimeSlots() {
-      const selectedDate = formatLocalDate(new Date(dateInput.value));
-      const vehicleData = vehicleSelect.value ? JSON.parse(vehicleSelect.value) : null;
-      const driver = driverSelect.value ? JSON.parse(driverSelect.value).name : null;
+    function updateTimeSlots(){
+      const selectedDate=formatLocalDate(new Date(dateInput.value));
+      const vehicleData=vehicleSelect.value?JSON.parse(vehicleSelect.value):null;
+      const driver=driverSelect.value?JSON.parse(driverSelect.value).name:null;
 
-      Array.from(timeSlotSelect.options).forEach(opt => {
-        if (opt.value === "") return;
-        opt.disabled = false;
+      Array.from(timeSlotSelect.options).forEach(opt=>{
+        if(opt.value==="") return;
+        opt.disabled=false;
 
-        if (!selectedDate || !vehicleData || !bookedDates[selectedDate]) {
-          opt.textContent = opt.value;
+        if(!selectedDate||!vehicleData||!bookedDates[selectedDate]){
+          opt.textContent=opt.value;
           return;
         }
 
-        const totalSeatsBooked = bookedDates[selectedDate]
-          .filter(r => r.vehicle === vehicleData.name && r.timeSlot === opt.value)
-          .reduce((sum, x) => sum + (x.seats || 0), 0);
+        const totalSeatsBooked=bookedDates[selectedDate].filter(r=>r.vehicle===vehicleData.name&&r.timeSlot===opt.value).reduce((sum,x)=>sum+(x.seats||0),0);
+        const seatsLeft=vehicleData.seats-totalSeatsBooked;
+        opt.textContent=`${opt.value} (${seatsLeft} seats left)`;
+        if(seatsLeft<=0) opt.disabled=true;
 
-        const seatsLeft = vehicleData.seats - totalSeatsBooked;
-
-        opt.textContent = `${opt.value} (${seatsLeft} seats left)`;
-        if (seatsLeft <= 0) opt.disabled = true;
-
-      if (driver) {
-  const driverAlreadyBooked = bookedDates[selectedDate]
-    .some(r => r.driver === driver && r.timeSlot === opt.value && r.vehicle !== vehicleData.name);
-  if (driverAlreadyBooked) opt.disabled = true;
-}
-
+        if(driver){
+          const driverAlreadyBooked=bookedDates[selectedDate].some(r=>r.driver===driver&&r.timeSlot===opt.value&&r.vehicle!==vehicleData.name);
+          if(driverAlreadyBooked) opt.disabled=true;
+        }
       });
     }
 
-    // Submit reservation
-    document.getElementById("reservationForm").addEventListener("submit", async function(e) {
+    document.getElementById("reservationForm").addEventListener("submit",async function(e){
       e.preventDefault();
-      const user = auth.currentUser;
-      if (!user) return;
+      const user=auth.currentUser;
+      if(!user) return;
 
-      if (!vehicleSelect.value || !driverSelect.value) {
-        alert("Select vehicle and driver");
-        return;
-      }
+      if(!vehicleSelect.value||!driverSelect.value){ alert("Select vehicle and driver"); return;}
 
-      const selectedVehicle = JSON.parse(vehicleSelect.value);
-      const selectedDriver = JSON.parse(driverSelect.value);
-      const categories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value);
-      const passengers = parseInt(document.getElementById("passengers").value);
-      const selectedDate = dateInput.value;
-      const selectedTimeSlot = timeSlotSelect.value;
+      const selectedVehicle=JSON.parse(vehicleSelect.value);
+      const selectedDriver=JSON.parse(driverSelect.value);
+      const categories=Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb=>cb.value);
+      const passengers=parseInt(document.getElementById("passengers").value);
+      const selectedDate=dateInput.value;
+      const selectedTimeSlot=timeSlotSelect.value;
 
-      if (passengers > selectedVehicle.seats) {
-        alert("❌ Passengers exceed vehicle seat capacity!");
-        return;
-      }
+      if(passengers>selectedVehicle.seats){ alert("❌ Passengers exceed vehicle seat capacity!"); return;}
 
-      const snapshot = await get(ref(db, "reservations"));
+      const snapshot=await get(ref(db,"reservations"));
+      let totalSeatsForVehicle=0;
+      let driverAlreadyBooked=false;
 
-      let totalSeatsForVehicle = 0;
-      let driverAlreadyBooked = false;
-
-      if (snapshot.exists()) {
-        Object.values(snapshot.val()).forEach(r => {
-          if (r.date === selectedDate && r.vehicle === selectedVehicle.name && r.timeSlot === selectedTimeSlot) {
-            totalSeatsForVehicle += r.passengers || 0;
-          }
-
-          if (r.date === selectedDate && r.driver === selectedDriver.name && r.timeSlot === selectedTimeSlot && r.vehicle !== selectedVehicle.name) {
-            driverAlreadyBooked = true;
-          }
+      if(snapshot.exists()){
+        Object.values(snapshot.val()).forEach(r=>{
+          if(r.date===selectedDate&&r.vehicle===selectedVehicle.name&&r.timeSlot===selectedTimeSlot) totalSeatsForVehicle+=r.passengers||0;
+          if(r.date===selectedDate&&r.driver===selectedDriver.name&&r.timeSlot===selectedTimeSlot&&r.vehicle!==selectedVehicle.name) driverAlreadyBooked=true;
         });
       }
 
-      if (totalSeatsForVehicle + passengers > selectedVehicle.seats) {
+      if(totalSeatsForVehicle+passengers>selectedVehicle.seats){
         alert(`❌ Cannot book! Vehicle is full for this date and time slot. (${totalSeatsForVehicle}/${selectedVehicle.seats} seats already booked)`);
         return;
       }
 
-      if (driverAlreadyBooked) {
+      if(driverAlreadyBooked){
         alert(`❌ Cannot book! Driver ${selectedDriver.name} is already assigned to another vehicle at this time.`);
         return;
       }
 
-      const reservation = {
-        name: document.getElementById("name").value,
-        department: document.getElementById("department").value,
-        categories,
-        purpose: document.getElementById("purpose").value,
-        destination: document.getElementById("destination").value,
-        tripType: document.getElementById("tripType").value,
-        contact: document.getElementById("contact").value,
-        date: selectedDate,
-        timeSlot: selectedTimeSlot,
-        passengers,
-        vehicle: selectedVehicle.name,
-        plate: selectedVehicle.plate,
-        seats: selectedVehicle.seats,
-        driver: selectedDriver.name,
-        driverEmail: selectedDriver.email,
-        status: "pending",
-        userEmail: user.email
-      };
+const reservation = {
+  name: document.getElementById("name").value,
+  department: document.getElementById("department").value,
+  categories: Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value),
+  purpose: document.getElementById("purpose").value,
+  destination: document.getElementById("destination").value,
+  tripType: document.getElementById("tripType").value,
+  contact: document.getElementById("contact").value,
+  date: selectedDate,
+  timeSlot: selectedTimeSlot,
+  passengers: passengers,
+  vehicle: selectedVehicle.name,
+  plate: selectedVehicle.plate,
+  seats: selectedVehicle.seats,
+  driver: selectedDriver.name,
+  driverEmail: selectedDriver.email,
+  status: "pending",
+  userEmail: user.email
+};
 
-      try {
-        const newRef = push(ref(db, "reservations"));
-        await set(newRef, reservation);
-        alert("Reservation submitted! Await admin approval.");
-        this.reset();
-        vehiclePreview.style.display = "none";
-        updateTimeSlots();
-      } catch (err) {
-        alert("Error: " + err.message);
-      }
+      const newReservationRef=push(ref(db,"reservations"));
+      await set(newReservationRef,reservation);
+      alert("✅ Reservation submitted!");
+      this.reset();
+      vehiclePreview.style.display="none";
+      updateTimeSlots();
     });
+
+showBookingsBtn.addEventListener("click", async ()=> {
+  if(!vehicleSelect.value) return;
+  const vehicleData = JSON.parse(vehicleSelect.value);
+  bookingTableBody.innerHTML = "";
+
+  const filterDate = document.getElementById("filterDate").value;
+  const filterDestination = document.getElementById("filterDestination").value.toLowerCase();
+
+  const snapshot = await get(ref(db,"reservations"));
+  if(snapshot.exists()){
+    let reservations = Object.values(snapshot.val())
+      .filter(r => r.vehicle === vehicleData.name && (r.status === "approved" || r.status === "pending"));
+
+    // Apply filters
+    if(filterDate) reservations = reservations.filter(r => r.date === filterDate);
+    if(filterDestination) reservations = reservations.filter(r => r.destination.toLowerCase().includes(filterDestination));
+
+    if(reservations.length === 0){
+      bookingTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:10px;">No bookings for this vehicle</td></tr>`;
+    } else {
+      reservations.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${r.date}</td><td>${r.timeSlot}</td><td>${r.destination}</td><td>${r.driver}</td><td>${r.passengers}</td>`;
+        bookingTableBody.appendChild(tr);
+      });
+    }
+  } else {
+    bookingTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:10px;">No bookings found</td></tr>`;
+  }
+
+  popupOverlay.style.display = "block";
+  bookingPopup.style.display = "block";
+});
+
+
+    closePopup.addEventListener("click", ()=>{
+      bookingPopup.style.display="none";
+      popupOverlay.style.display="none";
+    });
+
+    popupOverlay.addEventListener("click", ()=>{
+      bookingPopup.style.display="none";
+      popupOverlay.style.display="none";
+    });
+
+
+
+async function loadVehicleBookings() {
+  if(!vehicleSelect.value) return;
+  const vehicleData = JSON.parse(vehicleSelect.value);
+  bookingTableBody.innerHTML = "";
+
+  const filterDate = document.getElementById("filterDate").value;
+  const filterDestination = document.getElementById("filterDestination").value.toLowerCase();
+
+  const snapshot = await get(ref(db,"reservations"));
+  if(snapshot.exists()){
+    let reservations = Object.values(snapshot.val())
+      .filter(r => r.vehicle === vehicleData.name && (r.status === "approved" || r.status === "pending"));
+
+    // Apply filters
+    if(filterDate) reservations = reservations.filter(r => r.date === filterDate);
+    if(filterDestination) reservations = reservations.filter(r => r.destination.toLowerCase().includes(filterDestination));
+
+    if(reservations.length === 0){
+      bookingTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:10px;">No bookings for this vehicle</td></tr>`;
+    } else {
+      reservations.forEach(r => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${r.date}</td><td>${r.timeSlot}</td><td>${r.destination}</td><td>${r.driver}</td><td>${r.passengers}</td>`;
+        bookingTableBody.appendChild(tr);
+      });
+    }
+  } else {
+    bookingTableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding:10px;">No bookings found</td></tr>`;
+  }
+
+  popupOverlay.style.display = "block";
+  bookingPopup.style.display = "block";
+}
+
+
+// Show bookings when button clicked
+showBookingsBtn.addEventListener("click", loadVehicleBookings);
+
+// Real-time filtering
+document.getElementById("filterDate").addEventListener("change", loadVehicleBookings);
+document.getElementById("filterDestination").addEventListener("input", loadVehicleBookings);
+
+
+
+
+
 
   </script>
 </body>
