@@ -5,44 +5,92 @@
 <title>Driver Trip Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <style>
-  body { font-family: Arial, sans-serif; padding: 20px; background:#f2f2f2; }
-  h2 { text-align:center; margin-bottom:20px; }
-  #reservationsContainer { max-width:800px; margin:auto; }
-  
+  body { font-family: Arial, sans-serif; margin: 0; background:#f9f9f9; }
+
+  /* Header */
+  header {
+    background: #007BFF;
+    color: #fff;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  header h2 { margin: 0; font-size: 20px; }
+  header button {
+    background: #dc3545;
+    border: none;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  header button:hover { background:#b02a37; }
+
+  #reservationsContainer { max-width:900px; margin:20px auto; padding:0 15px; }
+
   .reservation {
-    padding:15px;
-    margin-bottom:15px;
-    border-radius:10px;
+    padding:15px 20px;
+    margin-bottom:20px;
+    border-radius:12px;
     box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    background:#fff;
     transition: transform 0.2s;
   }
   .reservation:hover { transform: scale(1.02); }
-  .reservation.pending { background:#cce5ff; }
-  .reservation.ontrip { background:#d4edda; }
-  .reservation.completed { background:#e2e3e5; }
-  
-  .reservation p { margin:5px 0; }
-  .reservation button { margin-right:10px; padding:8px 12px; border:none; border-radius:5px; cursor:pointer; }
+
+  .reservation p { margin:6px 0; }
+  .status-badge {
+    padding:3px 8px;
+    border-radius:12px;
+    font-size:12px;
+    font-weight: bold;
+    color:#fff;
+  }
+  .approved .status-badge { background:#007BFF; }
+  .ontrip .status-badge { background:#28a745; }
+  .completed .status-badge { background:#6c757d; }
+
+  .reservation button {
+    margin:6px 6px 0 0;
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:14px;
+    transition: background 0.2s;
+  }
   .confirm { background:#007BFF; color:#fff; }
+  .confirm:hover { background:#0056b3; }
   .decline { background:#dc3545; color:#fff; }
+  .decline:hover { background:#a71d2a; }
   .startTrip { background:#28a745; color:#fff; }
-  .endTrip { background:#ffc107; color:#fff; }
-  button:disabled { background:#ccc; cursor:not-allowed; }
-  
+  .startTrip:hover { background:#1e7e34; }
+  .endTrip { background:#ffc107; color:#000; }
+  .endTrip:hover { background:#e0a800; }
+  button:disabled { background:#ccc !important; cursor:not-allowed; }
+
   @media(max-width:600px) {
-    .reservation button { margin-bottom:5px; width:100%; }
+    .reservation { padding:12px; }
+    .reservation button { width:100%; margin:8px 0; }
   }
 </style>
 </head>
 <body>
 
-<h2>Driver Trip Dashboard</h2>
+<header>
+  <h2>Driver Trip Dashboard</h2>
+  <button id="logoutBtn">Logout</button>
+</header>
+
 <div id="reservationsContainer"></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
@@ -59,13 +107,20 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 const reservationsContainer = document.getElementById("reservationsContainer");
+const logoutBtn = document.getElementById("logoutBtn");
+
+logoutBtn.onclick = () => {
+  signOut(auth).then(() => {
+    window.location.href = "driver-login.html";
+  }).catch(err => alert("Logout failed: " + err.message));
+};
 
 function getTimestamp() {
   return new Date().toISOString();
 }
 
 onAuthStateChanged(auth, user => {
-  if(!user) window.location.href = "login.html";
+  if(!user) window.location.href = "driver-login.html";
   const driverEmail = user.email.trim().toLowerCase();
 
   onValue(ref(db,"reservations"), snapshot => {
@@ -77,11 +132,9 @@ onAuthStateChanged(auth, user => {
         const key = child.key;
         const status = data.status?.toLowerCase();
         const driverMatch = data.driverEmail?.trim().toLowerCase() === driverEmail;
-
-       if(["approved","ontrip","completed"].includes(status) && driverMatch){
-  reservations.push({ key, data });
-}
-
+        if(["approved","ontrip","completed"].includes(status) && driverMatch){
+          reservations.push({ key, data });
+        }
       });
 
       // Sort newest first
@@ -91,7 +144,7 @@ onAuthStateChanged(auth, user => {
         const data = r.data;
         const key = r.key;
         const div = document.createElement("div");
-        div.className = "reservation " + (data.status?.toLowerCase() || "pending");
+        div.className = "reservation " + (data.status?.toLowerCase() || "approved");
         div.id = `reservation-${key}`;
 
         div.innerHTML = `
@@ -101,7 +154,7 @@ onAuthStateChanged(auth, user => {
           <p><strong>Plate Number:</strong> ${data.plate || "N/A"}</p>
           <p><strong>Date:</strong> ${data.date || "N/A"}</p>
           <p><strong>Time Slot:</strong> ${data.timeSlot || "N/A"}</p>
-          <p><strong>Status:</strong> <span class="status">${data.status}</span></p>
+          <p><strong>Status:</strong> <span class="status-badge">${data.status}</span></p>
           <p><strong>Driver Confirmation:</strong> ${data.driverConfirmation || "Not yet"}</p>
         `;
 
@@ -116,7 +169,7 @@ onAuthStateChanged(auth, user => {
 
         const startBtn = document.createElement("button");
         startBtn.className = "startTrip";
-        startBtn.textContent = "Start Trip (ONTRIP)";
+        startBtn.textContent = "Start Trip";
 
         const endBtn = document.createElement("button");
         endBtn.className = "endTrip";
@@ -136,7 +189,7 @@ onAuthStateChanged(auth, user => {
           confirmBtn.disabled = true;
           declineBtn.disabled = true;
           startBtn.disabled = false;
-          div.querySelector(".status").textContent = "Approved";
+          div.querySelector(".status-badge").textContent = "Approved";
           div.className = "reservation approved";
           alert("Trip confirmed.");
         };
@@ -146,14 +199,13 @@ onAuthStateChanged(auth, user => {
           confirmBtn.disabled = true;
           declineBtn.disabled = true;
           startBtn.disabled = true;
-          div.querySelector(".status").textContent = "Declined";
-          div.className = "reservation pending";
+          div.querySelector(".status-badge").textContent = "Declined";
           alert("Trip declined.");
         };
 
         startBtn.onclick = async () => {
           await update(ref(db, `reservations/${key}`), { tripStartTime: getTimestamp(), status: "ONTRIP" });
-          div.querySelector(".status").textContent = "ONTRIP";
+          div.querySelector(".status-badge").textContent = "ONTRIP";
           div.className = "reservation ontrip";
           startBtn.disabled = true;
           endBtn.disabled = false;
@@ -161,7 +213,7 @@ onAuthStateChanged(auth, user => {
 
         endBtn.onclick = async () => {
           await update(ref(db, `reservations/${key}`), { status: "Completed", tripEndTime: getTimestamp() });
-          div.querySelector(".status").textContent = "Completed";
+          div.querySelector(".status-badge").textContent = "Completed";
           div.className = "reservation completed";
           [confirmBtn, declineBtn, startBtn, endBtn].forEach(b => b.disabled = true);
           alert("Trip ended and reservation completed!");
@@ -174,7 +226,6 @@ onAuthStateChanged(auth, user => {
 
         reservationsContainer.appendChild(div);
       });
-
     } else {
       reservationsContainer.innerHTML = "<p>No reservations found.</p>";
     }
