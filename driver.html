@@ -78,9 +78,10 @@ onAuthStateChanged(auth, user => {
         const status = data.status?.toLowerCase();
         const driverMatch = data.driverEmail?.trim().toLowerCase() === driverEmail;
 
-        if(["approved","ontrip","completed","pending"].includes(status) && driverMatch){
-          reservations.push({ key, data });
-        }
+       if(["approved","ontrip","completed"].includes(status) && driverMatch){
+  reservations.push({ key, data });
+}
+
       });
 
       // Sort newest first
