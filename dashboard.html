@@ -409,65 +409,96 @@
     dateInput.addEventListener("change",updateTimeSlots);
 
     let bookedDates={};
-    const fp=flatpickr("#date",{dateFormat:"Y-m-d",onDayCreate:function(dObj,dStr,fpObj,dayElem){
-      const dateStr=formatLocalDate(dayElem.dateObj);
-      if(bookedDates[dateStr]){
-        const notes=bookedDates[dateStr].map(r=>`🚐 ${r.vehicle} - ${r.driver} (${r.timeSlot})`);
-        if(notes.length>0){
-          const dot=document.createElement("span");
-          dot.classList.add("note-dot");
-          dot.textContent="•";
-          dot.title=notes.join("\n");
-          dayElem.appendChild(dot);
-        }
+const fp = flatpickr("#date", {
+  dateFormat: "Y-m-d",
+  onDayCreate: function(dObj, dStr, fpObj, dayElem) {
+    const dateStr = formatLocalDate(dayElem.dateObj);
 
-        const selectedVehicle=vehicleSelect.value?JSON.parse(vehicleSelect.value).name:null;
-        const selectedDriver=driverSelect.value?JSON.parse(driverSelect.value).name:null;
-        if(selectedVehicle&&selectedDriver){
-          const slotsBooked=bookedDates[dateStr].filter(r=>r.vehicle===selectedVehicle&&r.driver===selectedDriver).map(r=>r.timeSlot);
-          const allSlots=Array.from(timeSlotSelect.options).slice(1).map(opt=>opt.value);
-          if(slotsBooked.length>=allSlots.length) dayElem.classList.add("flatpickr-disabled");
-        }
+    if(bookedDates[dateStr]){
+      // Show notes for each reservation
+      const notes = bookedDates[dateStr].map(r => `🚐 ${r.vehicle} - ${r.driver} (${r.timeSlot})`);
+      if(notes.length > 0){
+        const dot = document.createElement("span");
+        dot.classList.add("note-dot");
+        dot.textContent = "•";
+        dot.title = notes.join("\n");
+        dayElem.appendChild(dot);
       }
-    }});
 
-    onValue(ref(db,"reservations"),snapshot=>{
-      bookedDates={};
-      if(snapshot.exists()){
-        Object.values(snapshot.val()).forEach(r=>{
-          if(!bookedDates[r.date]) bookedDates[r.date]=[];
-          bookedDates[r.date].push({vehicle:r.vehicle,driver:r.driver,timeSlot:r.timeSlot,seats:r.passengers,destination:r.destination});
-        });
-      }
-      fp.redraw();
-      updateTimeSlots();
-    });
+      // Disable date if all vehicles are fully booked for all timeslots
+      get(ref(db,"vehicles")).then(snapshot => {
+        if(snapshot.exists()){
+          const allVehicles = Object.values(snapshot.val());
+          const timeSlots = Array.from(timeSlotSelect.options).slice(1).map(opt=>opt.value);
+          let allFull = true;
 
-    function updateTimeSlots(){
-      const selectedDate=formatLocalDate(new Date(dateInput.value));
-      const vehicleData=vehicleSelect.value?JSON.parse(vehicleSelect.value):null;
-      const driver=driverSelect.value?JSON.parse(driverSelect.value).name:null;
+          for(const v of allVehicles){
+            const vehicleReservations = bookedDates[dateStr].filter(r => r.vehicle === v.name);
+            for(const ts of timeSlots){
+              const totalSeatsBooked = vehicleReservations.filter(r => r.timeSlot === ts).reduce((sum,x)=>sum+(x.seats||0),0);
+              if(totalSeatsBooked < v.seats){
+                allFull = false; // at least one vehicle has a free seat
+                break;
+              }
+            }
+            if(!allFull) break;
+          }
 
-      Array.from(timeSlotSelect.options).forEach(opt=>{
-        if(opt.value==="") return;
-        opt.disabled=false;
-
-        if(!selectedDate||!vehicleData||!bookedDates[selectedDate]){
-          opt.textContent=opt.value;
-          return;
-        }
-
-        const totalSeatsBooked=bookedDates[selectedDate].filter(r=>r.vehicle===vehicleData.name&&r.timeSlot===opt.value).reduce((sum,x)=>sum+(x.seats||0),0);
-        const seatsLeft=vehicleData.seats-totalSeatsBooked;
-        opt.textContent=`${opt.value} (${seatsLeft} seats left)`;
-        if(seatsLeft<=0) opt.disabled=true;
-
-        if(driver){
-          const driverAlreadyBooked=bookedDates[selectedDate].some(r=>r.driver===driver&&r.timeSlot===opt.value&&r.vehicle!==vehicleData.name);
-          if(driverAlreadyBooked) opt.disabled=true;
+          if(allFull) dayElem.classList.add("flatpickr-disabled");
         }
       });
     }
+  }
+});
+
+// Listen for reservations in real-time and update bookedDates
+onValue(ref(db,"reservations"), snapshot => {
+  bookedDates = {};
+  if(snapshot.exists()){
+    Object.values(snapshot.val()).forEach(r => {
+      if(!bookedDates[r.date]) bookedDates[r.date] = [];
+      bookedDates[r.date].push({
+        vehicle: r.vehicle,
+        driver: r.driver,
+        timeSlot: r.timeSlot,
+        seats: r.passengers,
+        destination: r.destination
+      });
+    });
+  }
+
+  fp.redraw();       // Refresh calendar for disabled dates
+  updateTimeSlots(); // Refresh timeslot availability
+});
+
+// Update timeslots based on selected vehicle and date only
+function updateTimeSlots(){
+  const selectedDate = dateInput.value;
+  const vehicleData = vehicleSelect.value ? JSON.parse(vehicleSelect.value) : null;
+
+  Array.from(timeSlotSelect.options).forEach(opt => {
+    if(opt.value === "") return;
+    opt.disabled = false;
+
+    if(!selectedDate || !vehicleData || !bookedDates[selectedDate]){
+      opt.textContent = opt.value;
+      return;
+    }
+
+    // Seats left for this vehicle at this time
+    const totalSeatsBooked = bookedDates[selectedDate]
+      .filter(r => r.vehicle === vehicleData.name && r.timeSlot === opt.value)
+      .reduce((sum,x) => sum + (x.seats||0),0);
+    const seatsLeft = vehicleData.seats - totalSeatsBooked;
+    opt.textContent = `${opt.value} (${seatsLeft} seats left)`;
+    if(seatsLeft <= 0) opt.disabled = true;
+  });
+}
+
+// Trigger timeslot update when date or vehicle changes
+vehicleSelect.addEventListener("change", updateTimeSlots);
+dateInput.addEventListener("change", updateTimeSlots);
+
 
     document.getElementById("reservationForm").addEventListener("submit",async function(e){
       e.preventDefault();
@@ -631,3 +662,4 @@ document.getElementById("filterDestination").addEventListener("input", loadVehic
   </script>
 </body>
 </html>
+
