@@ -256,9 +256,178 @@
         max-height: 250px;
       }
     }
+
+
+
+
   </style>
 </head>
 <body>
+
+
+
+
+<!-- Chatbot Toggle Button -->
+<button id="chatbotToggle">💬</button>
+
+<!-- Chatbot Container -->
+<div id="chatbot">
+  <div id="chatbotHeader">
+    Chatbot
+    <button id="chatbotClose">✖</button>
+  </div>
+  <div id="chatbotMessages"></div>
+  <div id="faqContainer">
+    <select id="faqDropdown">
+      <option value="">-- Select FAQ --</option>
+    </select>
+  </div>
+  <div id="chatInputContainer">
+    <input type="text" id="chatInput" placeholder="Type your question...">
+    <button id="sendBtn">Send</button>
+  </div>
+</div>
+
+<style>
+/* Chatbot Styles */
+#chatbotToggle {
+  position: fixed;
+  bottom: 20px; right: 20px;
+  width: 55px; height: 55px;
+  border-radius: 50%;
+  background: #6b21a8;
+  color: #fff;
+  font-size: 28px;
+  border: none;
+  cursor: pointer;
+  z-index: 1002;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+  transition: transform 0.2s;
+}
+#chatbotToggle:hover { transform: scale(1.1); }
+
+#chatbot {
+  display: none;
+  position: fixed; bottom: 90px; right: 20px;
+  width: 340px; max-height: 500px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  flex-direction: column;
+  font-family: 'Poppins', sans-serif;
+  z-index: 1001;
+  overflow: hidden;
+}
+
+#chatbotHeader {
+  padding: 12px 16px;
+  background: #6b21a8;
+  color: #fff;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 16px;
+}
+
+#chatbotMessages {
+  flex: 1;
+  padding: 12px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f9fafb;
+}
+
+#faqContainer {
+  padding: 8px 12px;
+  background: #f3f4f6;
+  border-top: 1px solid #e5e7eb;
+}
+
+#faqDropdown {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  font-size: 14px;
+}
+
+#chatInputContainer {
+  display: flex;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+#chatInput {
+  flex: 1;
+  padding: 10px 14px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+}
+
+#sendBtn {
+  background: #6b21a8;
+  color: #fff;
+  border: none;
+  padding: 0 16px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 0 8px 8px 0;
+  transition: background 0.2s, transform 0.1s;
+}
+#sendBtn:hover {
+  background: #9333ea;
+  transform: translateY(-1px);
+}
+
+/* Chat message bubbles */
+.chat-bubble {
+  max-width: 75%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 15px;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.chat-bubble.user {
+  align-self: flex-end;
+  background: #6b21a8;
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble.bot {
+  align-self: flex-start;
+  background: #e0f7fa;
+  color: #1f2937;
+  border-bottom-left-radius: 4px;
+}
+
+/* Scrollbar styling */
+#chatbotMessages::-webkit-scrollbar {
+  width: 6px;
+}
+#chatbotMessages::-webkit-scrollbar-thumb {
+  background: rgba(107,33,168,0.5);
+  border-radius: 3px;
+}
+#chatbotMessages::-webkit-scrollbar-track {
+  background: #f3f4f6;
+}
+
+/* Responsive adjustments */
+@media(max-width:480px){
+  #chatbot { width: 90%; right: 5%; bottom: 70px; max-height: 400px; }
+  #chatbotToggle { width: 45px; height: 45px; font-size: 22px; }
+}
+
+</style>
+
+
 
   <h2>User Dashboard - Reserve a Vehicle</h2>
   <button id="logoutBtn">Logout</button>
@@ -714,10 +883,85 @@ document.getElementById("filterDestination").addEventListener("input", loadVehic
 
 
 
+document.addEventListener("DOMContentLoaded", () => {
+  const chatMessages = document.getElementById("chatbotMessages");
+  const chatInput = document.getElementById("chatInput");
+  const sendBtn = document.getElementById("sendBtn");
+  const chatbot = document.getElementById("chatbot");
+  const chatbotToggle = document.getElementById("chatbotToggle");
+  const chatbotClose = document.getElementById("chatbotClose");
+  const faqDropdown = document.getElementById("faqDropdown");
 
+  // FAQ responses
+  const faqResponses = {
+    "How do I cancel my reservation?": "You may cancel your reservation by contacting the admin office or replying to your confirmation message.",
+    "Can I reserve on weekends?": "Vehicle usage on weekends is subject to approval and availability. Request in advance.",
+    "How far in advance should I reserve?": "We recommend reserving at least 2–3 days in advance for vehicle availability.",
+    "What types of vehicles are available?": "Available vehicle types include Coaster Van. For special requests, contact the transport office.",
+    "What are the available reservation hours?": "Vehicles can be reserved Monday to Friday, from 8:00 AM to 5:00 PM. Outside hours require special approval.",
+    "Who can make a reservation?": "CTU Danao faculty, staff, and authorized personnel can reserve vehicles. Provide full name and purpose.",
+    "Where can I go with the vehicle?": "Trips should be within authorized areas. Outside Cebu province requires special clearance.",
+    "Can I make multiple reservations?": "Yes, but each request must be submitted separately and is subject to approval and availability."
+  };
 
+  // Populate FAQ dropdown
+  Object.keys(faqResponses).forEach(q => {
+    const opt = document.createElement("option");
+    opt.value = q; opt.textContent = q;
+    faqDropdown.appendChild(opt);
+  });
 
-  </script>
+  // Toggle chatbot visibility
+  chatbotToggle.addEventListener("click", () => {
+    chatbot.style.display = chatbot.style.display === "flex" ? "none" : "flex";
+    chatbot.style.flexDirection = "column";
+  });
+
+  // Close chatbot
+  chatbotClose.addEventListener("click", () => chatbot.style.display = "none");
+
+  // Send message function
+  function sendMessage(msg) {
+    const message = msg.trim();
+    if (!message) return;
+    chatInput.value = "";
+    addMessage("You", message);
+
+    const responseKey = Object.keys(faqResponses).find(key => key.toLowerCase().includes(message.toLowerCase()));
+    const response = responseKey ? faqResponses[responseKey] : "Sorry, I don't understand that. Please ask about reservations or vehicles.";
+    
+    setTimeout(() => addMessage("Bot", response), 400);
+  }
+
+  // Add message to chat
+  function addMessage(sender, text) {
+    const msgDiv = document.createElement("div");
+    msgDiv.style.maxWidth = "80%"; msgDiv.style.padding = "10px 14px";
+    msgDiv.style.borderRadius = "14px"; msgDiv.style.wordWrap = "break-word";
+    msgDiv.style.fontSize = "16px"; msgDiv.style.lineHeight = "1.4";
+    if (sender === "You") {
+      msgDiv.style.alignSelf = "flex-end"; msgDiv.style.background = "#6b21a8"; msgDiv.style.color = "#fff";
+    } else {
+      msgDiv.style.alignSelf = "flex-start"; msgDiv.style.background = "#e0f7fa"; msgDiv.style.color = "#1f2937";
+    }
+    msgDiv.innerHTML = `<strong>${sender}:</strong> ${text}`;
+    chatMessages.appendChild(msgDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  // Send message by button or Enter key
+  sendBtn.addEventListener("click", () => sendMessage(chatInput.value));
+  chatInput.addEventListener("keypress", e => {
+    if (e.key === "Enter") { e.preventDefault(); sendMessage(chatInput.value); }
+  });
+
+  // Send message by FAQ selection
+  faqDropdown.addEventListener("change", () => {
+    const selected = faqDropdown.value;
+    if (selected) { sendMessage(selected); faqDropdown.value = ""; }
+  });
+});
+</script>
 </body>
 </html>
 
