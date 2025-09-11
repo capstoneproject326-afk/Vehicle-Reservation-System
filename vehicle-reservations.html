@@ -275,7 +275,7 @@ function renderReservations() {
           update(ref(db, `reservations/${r.id}`), { status: 'rejected' })
             .then(() => { 
               sendUserEmail({ ...r, status: 'rejected' });
-              sendDriverEmail({ ...r, status: 'rejected' });
+        
               alert("Reservation rejected & notifications sent."); 
               renderReservations(); 
             });
@@ -311,3 +311,4 @@ function toggleDarkMode() {
 </script>
 </body>
 </html>
+
