@@ -252,6 +252,7 @@ function renderReservations() {
         <p><strong>Category:</strong> ${Array.isArray(r.categories) ? r.categories.join(", ") : (r.categories || 'N/A')}</p>
         <p><strong>Purpose:</strong> ${r.purpose || 'N/A'}</p>
         <p><strong>Destination:</strong> ${r.destination || 'N/A'}</p>
+        <p><strong>Landmark:</strong> ${r.landmark || 'N/A'}</p>
         <p><strong>Date:</strong> ${r.date || 'N/A'}</p>
         <p><strong>Time Slot:</strong> ${r.timeSlot || 'N/A'}</p>
         <p><strong>Trip Type:</strong> ${r.tripType || 'N/A'}</p>

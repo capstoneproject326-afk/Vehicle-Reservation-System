@@ -5,6 +5,20 @@
   <title>CTU Vehicle Reservation</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  
+  
+   <!-- Flatpickr CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+
+
+  
   <style>
     * {
       box-sizing: border-box;
@@ -258,6 +272,14 @@
       }
     }
 
+    /* Popups */
+    #popupOverlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:999; }
+    #mapPopup { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); z-index:2000; background:#fff; padding:12px; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.3); width:92%; max-width:720px; height:520px; }
+
+    #map { height:420px; border-radius:8px; width:100%; }
+    @media(max-width:720px){ form { padding:18px; } #mapPopup { height:420px; } }
+
+
 
 
 
@@ -468,6 +490,13 @@
     <label for="destination">Destination:</label>
     <input type="text" id="destination" required>
 
+
+        <label for="landmark">Landmark</label>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <input type="text" id="landmark" placeholder="Click map icon to pin..." required />
+      <button type="button" id="openMapBtn" style="width:auto;padding:10px 14px;">📍 Pin on Map</button>
+    </div>
+
     <label for="tripType">Trip Type:</label>
     <select id="tripType" required>
       <option value="">Select Trip Type</option>
@@ -511,6 +540,24 @@
 
     <button type="submit">Submit Reservation</button>
   </form>
+
+
+    <!-- Map Modal -->
+  <div id="mapPopup">
+    <h3 style="text-align:center;margin:6px 0 8px 0;">Select Destination (click the map)</h3>
+    <div id="map"></div>
+    <div style="margin-top:10px; text-align:right;">
+      <button id="confirmMapBtn" style="background:#178149;color:#fff;padding:8px 14px;border:none;border-radius:8px;margin-right:8px;">Confirm</button>
+      <button id="closeMapBtn" style="background:#f43f5e;color:#fff;padding:8px 14px;border:none;border-radius:8px;">Close</button>
+    </div>
+  </div>
+
+  <!-- Leaflet + Flatpickr -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
+
 
   <!-- Popup Overlay -->
   <div id="popupOverlay"></div>
@@ -771,6 +818,7 @@ const reservation = {
   categories: Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value),
   purpose: document.getElementById("purpose").value,
   destination: document.getElementById("destination").value,
+  landmark: document.getElementById("landmark").value,
   tripType: document.getElementById("tripType").value,
   contact: document.getElementById("contact").value,
   date: selectedDate,
@@ -962,6 +1010,64 @@ document.addEventListener("DOMContentLoaded", () => {
     if (selected) { sendMessage(selected); faqDropdown.value = ""; }
   });
 });
+
+
+ flatpickr("#date", { dateFormat: "Y-m-d" });
+
+    const openMapBtn = document.getElementById('openMapBtn');
+    const mapPopup = document.getElementById('mapPopup');
+    const closeMapBtn = document.getElementById('closeMapBtn');
+    const confirmMapBtn = document.getElementById('confirmMapBtn');
+    const landmarkInput = document.getElementById('landmark');
+
+    let map, marker, selectedCoords = null, selectedAddress = null;
+
+    // Reverse geocode using Nominatim API
+    async function reverseGeocode(lat, lon) {
+      try {
+        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        return data.display_name || `Lat: ${lat.toFixed(5)}, Lng: ${lon.toFixed(5)}`;
+      } catch {
+        return `Lat: ${lat.toFixed(5)}, Lng: ${lon.toFixed(5)}`;
+      }
+    }
+
+    openMapBtn.addEventListener('click', () => {
+      mapPopup.style.display = 'block';
+      if (!map) {
+        map = L.map('map').setView([10.3157, 123.8854], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        map.on('click', async (e) => {
+          if (marker) marker.remove();
+          marker = L.marker(e.latlng).addTo(map);
+          selectedCoords = e.latlng;
+          selectedAddress = await reverseGeocode(e.latlng.lat, e.latlng.lng);
+          marker.bindPopup(selectedAddress).openPopup();
+        });
+      }
+      setTimeout(() => map.invalidateSize(), 200);
+    });
+
+    closeMapBtn.addEventListener('click', () => {
+      mapPopup.style.display = 'none';
+    });
+
+    confirmMapBtn.addEventListener('click', () => {
+      if (!selectedCoords) {
+        alert('Please click on the map first.');
+        return;
+      }
+      landmarkInput.value = selectedAddress || `Lat: ${selectedCoords.lat}, Lng: ${selectedCoords.lng}`;
+      mapPopup.style.display = 'none';
+    });
+
+
+
 </script>
 </body>
 </html>

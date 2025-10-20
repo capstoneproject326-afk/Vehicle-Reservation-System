@@ -49,6 +49,23 @@
     font-weight: bold;
     color:#fff;
   }
+
+
+.mapBtn {
+  background: #17a2b8;
+  color: #fff;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+.mapBtn:hover { background: #117a8b; }
+
+
+
+
   .approved .status-badge { background:#007BFF; }
   .ontrip .status-badge { background:#28a745; }
   .completed .status-badge { background:#6c757d; }
@@ -150,18 +167,29 @@ onAuthStateChanged(auth, user => {
         div.innerHTML = `
           <p><strong>Name:</strong> ${data.name || "N/A"}</p>
           <p><strong>Destination:</strong> ${data.destination || "N/A"}</p>
+           <p><strong>Landmark:</strong> ${data.landmark || "N/A"}</p>
           <p><strong>Vehicle:</strong> ${data.vehicle || "N/A"}</p>
           <p><strong>Plate Number:</strong> ${data.plate || "N/A"}</p>
           <p><strong>Date:</strong> ${data.date || "N/A"}</p>
           <p><strong>Time Slot:</strong> ${data.timeSlot || "N/A"}</p>
           <p><strong>Status:</strong> <span class="status-badge">${data.status}</span></p>
           <p><strong>Driver Confirmation:</strong> ${data.driverConfirmation || "Not yet"}</p>
+
+           <button class="mapBtn" onclick="viewOnMap('${data.landmark}')">View on Map</button>
+
         `;
+
+
 
         // Buttons
         const confirmBtn = document.createElement("button");
         confirmBtn.className = "confirm";
         confirmBtn.textContent = "Confirm";
+
+        
+
+
+        
 
         const declineBtn = document.createElement("button");
         declineBtn.className = "decline";
@@ -231,6 +259,22 @@ onAuthStateChanged(auth, user => {
     }
   });
 });
+
+function viewOnMap(landmark) {
+  const query = landmark;
+  if (!query) {
+    alert("No location provided!");
+    return;
+  }
+  const mapUrl = `https://www.google.com/maps?q=${encodeURIComponent(query)}`;
+  window.open(mapUrl, "_blank");
+}
+
+// ✅ Make it accessible globally
+window.viewOnMap = viewOnMap;
+
+
+
 </script>
 </body>
 </html>
