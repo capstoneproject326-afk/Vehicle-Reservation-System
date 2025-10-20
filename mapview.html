@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Booking Map Overview</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+<style>
+  body { margin: 0; font-family: "Poppins", sans-serif; background: #f5f6fa; }
+  header { background: #007bff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+  header h2 { margin: 0; font-size: 20px; }
+  header button { background: #dc3545; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
+  #map { height: 90vh; width: 100%; }
+</style>
+</head>
+<body>
+
+<header>
+  <h2>Map View Summary</h2>
+  <button id="logoutBtn">Logout</button>
+</header>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
+  authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
+  databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
+  projectId: "vehicle-management-syste-8f7fe",
+  storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
+  messagingSenderId: "423136689247",
+  appId: "1:423136689247:web:47dc93d0a171f06f096fea",
+  measurementId: "G-PF0808T11H"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+const logoutBtn = document.getElementById("logoutBtn");
+
+// LOGOUT
+logoutBtn.onclick = () => {
+  signOut(auth).then(() => window.location.href = "admin-login.html")
+    .catch(err => alert("Logout failed: " + err.message));
+};
+
+// MAP SETUP
+const map = L.map('map').setView([10.3157, 123.8854], 11);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution: '&copy; OpenStreetMap contributors'
+}).addTo(map);
+
+// GEOCODE ADDRESS TO COORDINATES
+async function geocodeAddress(address) {
+  try {
+    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+  } catch (err) {
+    console.error("Geocode error:", err);
+  }
+  return null;
+}
+
+onAuthStateChanged(auth, user => {
+  if (!user) window.location.href = "admin-login.html";
+
+  const userEmail = user.email.trim().toLowerCase();
+  const isAdmin = userEmail === "admin@gmail.com"; // Replace with your admin email
+
+  onValue(ref(db, "reservations"), async snapshot => {
+    // Clear previous markers
+    map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
+
+    if (!snapshot.exists()) return;
+
+    const bounds = [];
+
+    for (const child of Object.values(snapshot.val())) {
+      const data = child;
+      let status = data.status?.trim().toLowerCase() || "";
+      if (status.startsWith("comple")) status = "completed";
+
+      const driverMatch = data.driverEmail?.trim().toLowerCase() === userEmail;
+
+      // Admin sees all, drivers see only their own bookings
+      if ((driverMatch || isAdmin) && ["pending", "approved", "ontrip", "completed"].includes(status) && data.landmark) {
+        const coords = await geocodeAddress(data.landmark);
+        if (coords) {
+          bounds.push([coords.lat, coords.lng]);
+
+          // Select icon based on status
+          let iconUrl = '';
+          switch(status){
+            case 'pending': iconUrl = 'https://cdn-icons-png.flaticon.com/512/1828/1828665.png'; break; // red
+            case 'approved': iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; break; // green
+            case 'ontrip': iconUrl = 'https://cdn-icons-png.flaticon.com/512/565/565547.png'; break; // yellow
+            case 'completed': iconUrl = 'https://cdn-icons-png.flaticon.com/512/565/565484.png'; break; // blue
+            default: iconUrl = 'https://cdn-icons-png.flaticon.com/512/565/565484.png';
+          }
+
+          const vehicleIcon = L.icon({
+            iconUrl: iconUrl,
+            iconSize: [35, 35],
+            iconAnchor: [17, 35],
+            popupAnchor: [0, -35]
+          });
+
+          L.marker([coords.lat, coords.lng], { icon: vehicleIcon }).addTo(map)
+            .bindPopup(`
+              <strong>${data.name}</strong><br>
+              Destination: ${data.destination}<br>
+              Passenger: ${data.passengers || "N/A"}<br>
+              Status: ${data.status}<br>
+              Driver: ${data.driver || "N/A"}
+            `);
+        }
+      }
+    }
+
+    if (bounds.length > 0) map.fitBounds(bounds, { padding: [50, 50] });
+  });
+});
+</script>
+</body>
+</html>

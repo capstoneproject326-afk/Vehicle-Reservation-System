@@ -1020,51 +1020,49 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmMapBtn = document.getElementById('confirmMapBtn');
     const landmarkInput = document.getElementById('landmark');
 
-    let map, marker, selectedCoords = null, selectedAddress = null;
+   // === MAP PICKER LOGIC ===
+let map, marker, selectedCoords = null;
 
-    // Reverse geocode using Nominatim API
-    async function reverseGeocode(lat, lon) {
-      try {
-        const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`;
-        const res = await fetch(url);
-        const data = await res.json();
-        return data.display_name || `Lat: ${lat.toFixed(5)}, Lng: ${lon.toFixed(5)}`;
-      } catch {
-        return `Lat: ${lat.toFixed(5)}, Lng: ${lon.toFixed(5)}`;
-      }
-    }
+const mapPopup = document.getElementById("mapPopup");
+const openMapBtn = document.getElementById("openMapBtn");
+const closeMapBtn = document.getElementById("closeMapBtn");
+const confirmMapBtn = document.getElementById("confirmMapBtn");
+const landmarkInput = document.getElementById("landmark");
 
-    openMapBtn.addEventListener('click', () => {
-      mapPopup.style.display = 'block';
-      if (!map) {
-        map = L.map('map').setView([10.3157, 123.8854], 13);
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+// Open map popup
+openMapBtn.addEventListener("click", () => {
+  mapPopup.style.display = "block";
+  if (!map) {
+    map = L.map("map").setView([10.3157, 123.8854], 13); // Cebu center default
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors"
+    }).addTo(map);
 
-        map.on('click', async (e) => {
-          if (marker) marker.remove();
-          marker = L.marker(e.latlng).addTo(map);
-          selectedCoords = e.latlng;
-          selectedAddress = await reverseGeocode(e.latlng.lat, e.latlng.lng);
-          marker.bindPopup(selectedAddress).openPopup();
-        });
-      }
-      setTimeout(() => map.invalidateSize(), 200);
+    // Add marker on click
+    map.on("click", function (e) {
+      selectedCoords = e.latlng;
+      if (marker) map.removeLayer(marker);
+      marker = L.marker(selectedCoords).addTo(map);
     });
+  }
+  setTimeout(() => map.invalidateSize(), 200);
+});
 
-    closeMapBtn.addEventListener('click', () => {
-      mapPopup.style.display = 'none';
-    });
+// Close popup without saving
+closeMapBtn.addEventListener("click", () => {
+  mapPopup.style.display = "none";
+});
 
-    confirmMapBtn.addEventListener('click', () => {
-      if (!selectedCoords) {
-        alert('Please click on the map first.');
-        return;
-      }
-      landmarkInput.value = selectedAddress || `Lat: ${selectedCoords.lat}, Lng: ${selectedCoords.lng}`;
-      mapPopup.style.display = 'none';
-    });
+// Confirm and store coordinates
+confirmMapBtn.addEventListener("click", () => {
+  if (!selectedCoords) {
+    alert("Please click on the map to select a landmark.");
+    return;
+  }
+  // Store coordinates in landmark input
+  landmarkInput.value = `${selectedCoords.lat.toFixed(6)}, ${selectedCoords.lng.toFixed(6)}`;
+  mapPopup.style.display = "none";
+});
 
 
 
