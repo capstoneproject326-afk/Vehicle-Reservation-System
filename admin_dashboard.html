@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
-      --bg-main: #f1f5f9;
-      --bg-sidebar: rgba(17, 24, 39, 0.8);
+      --bg-main: rgba(46, 79, 158, 1);
+      --bg-sidebar: rgba(51, 51, 51, 1);
       --bg-topbar: rgba(255, 255, 255, 0.8);
       --text-color: #1f2937;
       --card-bg: rgba(255, 255, 255, 0.3);
@@ -16,7 +16,7 @@
 
     body.dark {
       --bg-main: #1e293b;
-      --bg-sidebar: rgba(30, 41, 59, 0.95);
+      --bg-sidebar: rgba(51, 51, 51, 1);
       --bg-topbar: rgba(30, 41, 59, 0.95);
       --text-color: #f8fafc;
       --card-bg: rgba(51, 65, 85, 0.5);
@@ -41,7 +41,7 @@
       flex-direction: column;
       backdrop-filter: blur(10px);
     }
-    .sidebar h2 { text-align: center; padding: 18px 10px; font-size: 18px; background: rgba(31,41,55,0.9); }
+    .sidebar h2 { text-align: center; padding: 18px 10px; font-size: 18px; background: rgba(46, 110, 76, 1); }
     .sidebar nav { display: flex; flex-direction: column; margin-top: 10px; }
     .nav-link {
       padding: 12px 20px;
@@ -152,7 +152,7 @@ h2 a:hover {
     <div class="topbar">
       <h1>Admin Dashboard</h1>
       <div>
-        <button class="dark-mode-toggle" onclick="toggleDarkMode()">Dark Mode</button>
+
         <button id="logout" class="logout-btn">Logout</button>
       </div>
     </div>
