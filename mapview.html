@@ -102,13 +102,32 @@ onAuthStateChanged(auth, user => {
 
           // Select icon based on status
           let iconUrl = '';
-          switch(status){
-            case 'pending': iconUrl = 'https://cdn-icons-png.flaticon.com/512/1828/1828665.png'; break; // red
-            case 'approved': iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; break; // green
-            case 'ontrip': iconUrl = 'https://cdn-icons-png.flaticon.com/512/565/565547.png'; break; // yellow
-            case 'completed': iconUrl = 'https://cdn-icons-png.flaticon.com/512/565/565484.png'; break; // blue
-            default: iconUrl = 'https://cdn-icons-png.flaticon.com/512/565/565484.png';
-          }
+         switch (status) {
+  case 'pending':
+    iconUrl = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; 
+    // 🟡 Yellow circle
+    break;
+
+  case 'approved':
+    iconUrl = 'https://cdn-icons-png.flaticon.com/512/845/845646.png'; 
+    // ✅ Green check mark
+    break;
+
+  case 'ontrip':
+    iconUrl = 'https://cdn-icons-png.flaticon.com/512/3097/3097144.png'; 
+    // 🚗 Small car
+    break;
+
+  case 'completed':
+    iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; 
+    // 🟢 Green circle
+    break;
+
+  default:
+    iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; 
+    // Default to green circle
+}
+
 
           const vehicleIcon = L.icon({
             iconUrl: iconUrl,
@@ -135,3 +154,4 @@ onAuthStateChanged(auth, user => {
 </script>
 </body>
 </html>
+
