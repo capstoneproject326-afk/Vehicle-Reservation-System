@@ -133,66 +133,50 @@ h2 a:hover {
     flex-direction: column;
   }
 
+  .menu-btn {
+    display: block; /* show hamburger on mobile */
+  }
+
   .sidebar {
-    width: 100%;
-    height: auto;
-    flex-direction: row;
-    overflow-x: auto;
+    position: absolute;
+    left: -250px;
+    top: 0;
+    width: 220px;
+    height: 100%;
+    background: var(--bg-sidebar);
+    transition: left 0.3s ease;
+    z-index: 1000;
   }
 
-  .sidebar h2 {
-    font-size: 16px;
-    padding: 10px;
-  }
-
-  .nav-link {
-    padding: 10px;
-    font-size: 14px;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-  }
-
-  .nav-link span {
-    display: none; /* hide text, show only icons */
+  .sidebar.active {
+    left: 0;
   }
 
   .main {
-    flex-grow: 1;
     width: 100%;
   }
 
   .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .topbar-left {
     flex-direction: row;
+    justify-content: space-between;
     align-items: center;
-    gap: 8px;
   }
 
   .content {
     padding: 20px;
   }
-
-  .summary {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  }
 }
 
-@media (max-width: 480px) {
-  .ctu-logo {
-    width: 30px;
-    height: 30px;
-  }
 
-  .topbar h1 {
-    font-size: 16px;
-  }
+.menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: var(--text-color);
+  cursor: pointer;
 }
+
 
 
 
@@ -222,15 +206,16 @@ h2 a:hover {
   </div>
 
   <div class="main">
-    <div class="topbar">
-         
-      <h1>Admin Dashboard</h1>
-      
-      <div>
+   <div class="topbar">
+  <div class="topbar-left">
+    <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+    <h1>Admin Dashboard</h1>
+  </div>
+  <div>
+    <button id="logout" class="logout-btn">Logout</button>
+  </div>
+</div>
 
-        <button id="logout" class="logout-btn">Logout</button>
-      </div>
-    </div>
 
     <div class="content">
       <h2>Welcome, Administrator 👋</h2>
@@ -340,6 +325,16 @@ h2 a:hover {
       pendingCount.textContent = pending;
       completedCount.textContent = completed;
     });
+
+
+    // Mobile menu toggle
+const menuBtn = document.getElementById("menu-toggle");
+const sidebar = document.getElementById("sidebar");
+
+menuBtn.addEventListener("click", () => {
+  sidebar.classList.toggle("active");
+});
+
   </script>
 </body>
 </html>
