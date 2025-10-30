@@ -233,6 +233,41 @@ h2 a:hover {
   color: #60a5fa; /* optional hover color */
 }
 
+/* --- Mobile sidebar toggle styles --- */
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 22px;
+  cursor: pointer;
+  display: none; /* hidden on desktop */
+}
+
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 220px;
+    height: 100%;
+    background: var(--bg-sidebar);
+    transition: left 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.show {
+    left: 0;
+  }
+
+  body {
+    overflow-x: hidden;
+  }
+}
+
 
 
   </style>
@@ -256,13 +291,18 @@ h2 a:hover {
 
   <!-- Main content -->
   <div class="main">
-    <div class="topbar">
-      <h1>Registered Drivers & Trips</h1>
-      <div>
-       
-        <button id="logout" class="logout-btn">Logout</button>
-      </div>
-    </div>
+  <div class="topbar">
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <button id="menuToggle" class="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    <h1>Registered Drivers & Trips</h1>
+  </div>
+  <div>
+    <button id="logout" class="logout-btn">Logout</button>
+  </div>
+</div>
+
     <div class="content">
       <input type="text" id="searchInput" placeholder="Search by name or email..." />
       <table>
@@ -420,6 +460,29 @@ h2 a:hover {
     function toggleDarkMode() {
       document.body.classList.toggle('dark');
     }
+
+
+    // Sidebar toggle for mobile
+const sidebar = document.querySelector('.sidebar');
+const menuToggle = document.getElementById('menuToggle');
+let sidebarVisible = false;
+
+menuToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  sidebarVisible = !sidebarVisible;
+  sidebar.classList.toggle('show', sidebarVisible);
+});
+
+document.addEventListener('click', (e) => {
+  if (window.innerWidth <= 768 && sidebarVisible) {
+    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+      sidebarVisible = false;
+      sidebar.classList.remove('show');
+    }
+  }
+});
+
   </script>
+  
 </body>
 </html>
