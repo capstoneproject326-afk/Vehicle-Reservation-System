@@ -25,27 +25,22 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-  font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  height: 100vh;
-  overflow-x: hidden; /* only hide horizontal overflow */
-  overflow-y: auto;   /* allow vertical scrolling */
-  background-color: var(--bg-main);
-  transition: background 0.3s ease;
-}
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-main);
+      transition: background 0.3s ease;
+    }
 
-
-   .sidebar {
-  width: 240px;
-  background: var(--bg-sidebar);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  backdrop-filter: blur(10px);
-  position: relative; /* <-- important, not absolute */
-  left: 0;
-}
-
+    .sidebar {
+      width: 240px;
+      background: var(--bg-sidebar);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
+    }
     .sidebar h2 { text-align: center; padding: 18px 10px; font-size: 18px; background: rgba(46, 110, 76, 1); }
     .sidebar nav { display: flex; flex-direction: column; margin-top: 10px; }
     .nav-link {
@@ -132,58 +127,37 @@ h2 a:hover {
   color: #60a5fa; /* optional hover color */
 }
 
-//* -------- Responsive Design -------- */
-@media (max-width: 768px) {
-  body {
-    flex-direction: column;
-    overflow-y: auto; /* allow scroll on mobile */
-  }
 
-  .menu-btn {
-    display: block; /* show hamburger on mobile */
-  }
-
-  .sidebar {
-    position: absolute;
-    left: -250px;
-    top: 0;
-    width: 220px;
-    height: 100%;
-    background: var(--bg-sidebar);
-    transition: left 0.3s ease;
-    z-index: 1000;
-  }
-
-  .sidebar.active {
-    left: 0;
-    z-index: 2000; /* make sure it’s on top */
-  }
-
-  .main {
-    width: 100%;
-  }
-
-  .topbar {
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .content {
-    padding: 20px;
-  }
-}
-
-
-.menu-btn {
-  display: none;
+/* Hamburger button */
+.menu-toggle {
   background: none;
   border: none;
-  font-size: 20px;
   color: var(--text-color);
+  font-size: 22px;
   cursor: pointer;
+  display: none;
+  margin-right: 10px;
 }
 
+@media (max-width: 768px) {
+  .menu-toggle {
+    display: block;
+  }
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 220px;
+    background: var(--bg-sidebar);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  .sidebar.show {
+    transform: translateX(0);
+  }
+}
 
 
 
@@ -193,9 +167,6 @@ h2 a:hover {
 </head>
 <body>
   <div class="sidebar" id="sidebar">
-
-
-
   <h2><a href="admin_dashboard.html">CTU Admin</a></h2>
 
     <nav>
@@ -213,9 +184,11 @@ h2 a:hover {
   </div>
 
   <div class="main">
-   <div class="topbar">
-  <div class="topbar-left">
-    <button id="menu-toggle" class="menu-btn"><i class="fas fa-bars"></i></button>
+ <div class="topbar">
+  <div style="display: flex; align-items: center;">
+    <button id="menuToggle" class="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
     <h1>Admin Dashboard</h1>
   </div>
   <div>
@@ -334,16 +307,38 @@ h2 a:hover {
     });
 
 
-    // Mobile menu toggle
-const menuBtn = document.getElementById("menu-toggle");
-const sidebar = document.getElementById("sidebar");
 
-menuBtn.addEventListener("click", () => {
-  sidebar.classList.toggle("active");
+    // Sidebar toggle for mobile
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menuToggle');
+let sidebarVisible = false;
+
+menuToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  sidebarVisible = !sidebarVisible;
+  sidebar.classList.toggle('show', sidebarVisible);
 });
 
+// Auto-close sidebar when clicking outside or on a link (mobile)
+document.addEventListener('click', (e) => {
+  if (window.innerWidth <= 768 && sidebarVisible) {
+    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+      sidebarVisible = false;
+      sidebar.classList.remove('show');
+    }
+  }
+});
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      sidebarVisible = false;
+      sidebar.classList.remove('show');
+    }
+  });
+});
+
+    
   </script>
 </body>
 </html>
-
-<!-- Indicator Only -->
