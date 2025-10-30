@@ -127,6 +127,73 @@ h2 a:hover {
   color: #60a5fa; /* optional hover color */
 }
 
+/* -------- Responsive Design -------- */
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .sidebar h2 {
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .nav-link {
+    padding: 10px;
+    font-size: 14px;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .nav-link span {
+    display: none; /* hide text, show only icons */
+  }
+
+  .main {
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .topbar-left {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .summary {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .ctu-logo {
+    width: 30px;
+    height: 30px;
+  }
+
+  .topbar h1 {
+    font-size: 16px;
+  }
+}
+
 
 
 
@@ -135,6 +202,9 @@ h2 a:hover {
 </head>
 <body>
   <div class="sidebar" id="sidebar">
+
+
+
   <h2><a href="admin_dashboard.html">CTU Admin</a></h2>
 
     <nav>
@@ -153,7 +223,9 @@ h2 a:hover {
 
   <div class="main">
     <div class="topbar">
+         
       <h1>Admin Dashboard</h1>
+      
       <div>
 
         <button id="logout" class="logout-btn">Logout</button>
