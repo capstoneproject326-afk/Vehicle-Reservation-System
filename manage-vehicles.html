@@ -159,14 +159,17 @@ h2 a:hover {
   display: none; /* hidden on desktop */
 }
 
+@/* --- Responsive adjustments --- */
 @media (max-width: 768px) {
+  /* Show the menu toggle icon */
   .menu-toggle {
     display: block;
   }
 
+  /* Sidebar slides in/out */
   .sidebar {
     position: fixed;
-    left: -250px;
+    left: -240px;
     top: 0;
     width: 220px;
     height: 100%;
@@ -179,8 +182,54 @@ h2 a:hover {
     left: 0;
   }
 
+  /* Prevent horizontal scroll */
   body {
     overflow-x: hidden;
+  }
+
+  /* Main content pushes below topbar */
+  .main {
+    flex: 1;
+    width: 100%;
+  }
+
+  /* Topbar simplified for mobile */
+  .topbar {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .topbar h1 {
+    font-size: 18px;
+  }
+
+  /* Reduce padding in content */
+  .content {
+    padding: 16px;
+  }
+
+  /* Card spacing and font size adjustments */
+  .card {
+    padding: 14px;
+  }
+
+  /* Make table scroll horizontally */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th, td {
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  /* Vehicle photo smaller */
+  .vehicle-photo {
+    width: 45px;
+    height: 30px;
   }
 }
 
