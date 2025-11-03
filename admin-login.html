@@ -24,14 +24,21 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  body {
+body {
   font-family: 'Segoe UI', sans-serif;
-  display: flex;
-  min-height: 100vh;   /* instead of height: 100vh */
-  flex-direction: column; 
-  overflow-x: hidden;  /* allow vertical scroll */
+  min-height: 100vh;
   background-color: var(--bg-main);
   transition: background 0.3s ease;
+  overflow-x: hidden;    /* horizontal scroll hidden */
+  overflow-y: auto;      /* allow vertical scroll */
+  display: block;        /* remove flex for body to allow natural scroll */
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-bg);
+  flex-grow: 1;
 }
 
 
@@ -167,13 +174,6 @@ h2 a:hover {
     transform: translateX(0);
   }
 
- .main {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--card-bg);
-  overflow: auto;   /* allow scrolling inside if needed */
-}
 
   .topbar {
     position: sticky;
