@@ -99,23 +99,23 @@ h2 a:hover {
 }
 
 @media (max-width: 768px) {
-  .sidebar {
-    width: 200px; /* smaller on mobile */
-    position: fixed;
-    top: 0;
-    left: -200px;
-    height: 100%;
-    z-index: 1000;
-    transition: left 0.3s ease;
+  .content {
+    padding: 20px;
   }
-  .sidebar.show {
-    left: 0;
+  .topbar h1 {
+    font-size: 18px;
   }
-  .main {
-    margin-left: 0; /* remove desktop spacing */
+  .logout-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
+  .trip {
+    padding: 15px;
+  }
+  .trip-container {
+    grid-template-columns: 1fr; /* Single column for mobile */
   }
 }
-
 
 
 
@@ -149,15 +149,14 @@ h2 a:hover {
 <div>
   <button id="logout" class="logout-btn">Logout</button>
 </div>
+</div> <!-- ✅ properly closes .topbar -->
 
-
-  <div class="content">
-    <h2 class="page-title">Ongoing Trip List</h2>
-    <div class="trip-container" id="tripList"></div>
-    <div class="buttons">
-    </div>
-  </div>
+<div class="content">
+  <h2 class="page-title">Ongoing Trip List</h2>
+  <div class="trip-container" id="tripList"></div>
+  <div class="buttons"></div>
 </div>
+
 
 
 
