@@ -178,7 +178,10 @@ h2 a:hover {
 }
 
 @media (max-width: 768px) {
-  /* Sidebar responsive behavior */
+  .menu-toggle {
+    display: block;
+  }
+
   .sidebar {
     position: fixed;
     left: -250px;
@@ -194,53 +197,12 @@ h2 a:hover {
     left: 0;
   }
 
-  .menu-toggle {
-    display: block;
-  }
-
-  /* Fit main content */
-  .main {
-    width: 100%;
-  }
-
-  /* Adjust topbar layout */
-.topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-    padding: 12px 16px;
-}
-
-.topbar > div:last-child {
-    margin-left: auto; /* push logout to right */
-}
-
-
-  .topbar h1 {
-    font-size: 18px;
-  }
-
-  /* Reduce padding so it fits perfectly */
-  .content {
-    padding: 15px 20px;
-  }
-
-  /* Make each reservation box fit nicely */
-  .reservation {
-    padding: 14px;
-    margin: 10px 0;
-    font-size: 14px;
-  }
-
-  .reservation p {
-    font-size: 13px;
-  }
-
-  /* Prevent horizontal scrolling */
-  body, html {
+  body {
     overflow-x: hidden;
   }
 }
+
+
 
 
 
