@@ -164,6 +164,18 @@ h2 a:hover {
 
 
 
+
+/* Hamburger button */
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 22px;
+  cursor: pointer;
+  display: none;
+  margin-right: 10px;
+}
+
 /* --- Sidebar toggle behavior for mobile --- */
 @media (max-width: 768px) {
   .sidebar {
@@ -217,18 +229,27 @@ h2 a:hover {
 
 
 
-<div class="main">
+  <div class="main">
   <div class="topbar">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <button id="menuToggle" class="menu-toggle">
-        <i class="fas fa-bars"></i>
-      </button>
-      <h1>Completed Trips</h1>
-    </div>
-    <div>
-    
-    </div>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <button id="menuToggle" class="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    <h1>Completed Trips</h1>
   </div>
+  <div>
+    <button id="logout" class="logout-btn">Logout</button>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 
 
 
@@ -245,8 +266,7 @@ h2 a:hover {
       <div class="trip-container" id="tripList"></div>
 
       <div class="buttons">
-        <button class="action-btn" id="dashboardBtn">Back to Dashboard</button>
-        <button class="action-btn" id="logoutBtn">Logout</button>
+ 
       </div>
     </div>
   </div>
