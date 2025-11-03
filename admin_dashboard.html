@@ -23,15 +23,23 @@
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  min-height: 100vh; /* instead of height: 100vh */
+  background-color: var(--bg-main);
+  transition: background 0.3s ease;
+}
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      height: 100vh;
-      overflow: hidden;
-      background-color: var(--bg-main);
-      transition: background 0.3s ease;
-    }
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(1px);
+  background-color: var(--card-bg);
+  overflow-y: auto; /* scrollable content */
+  height: 100%; /* ensure it fills parent */
+}
 
     .sidebar {
       width: 240px;
@@ -138,21 +146,23 @@ h2 a:hover {
   display: none;
   margin-right: 10px;
 }
-
 @media (max-width: 768px) {
-  .content {
-    padding: 15px 20px;
+  body {
+    flex-direction: column; /* sidebar can overlay, main stacks below */
   }
-  .topbar h1 {
-    font-size: 18px;
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    transform: translateX(-100%);
+    z-index: 1000;
   }
-  .card h3 {
-    font-size: 20px;
-  }
-  .card p {
-    font-size: 14px;
+  .main {
+    margin-left: 0; /* no sidebar space reserved */
   }
 }
+
 
 
 
