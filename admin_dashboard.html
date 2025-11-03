@@ -150,14 +150,15 @@ h2 a:hover {
   body {
     flex-direction: column; /* sidebar can overlay, main stacks below */
   }
-  .sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    height: 100%;
-    transform: translateX(-100%);
-    z-index: 1000;
-  }
+ .sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transform: translateX(-100%);
+  z-index: 1000;
+}
+
   .main {
     margin-left: 0; /* no sidebar space reserved */
   }
@@ -165,6 +166,16 @@ h2 a:hover {
   .menu-toggle {
     display: inline-block;
   }
+}
+
+/* Smooth transition for sidebar */
+.sidebar {
+  transition: transform 0.3s ease;
+}
+
+/* Show sidebar when 'show' class is added */
+.sidebar.show {
+  transform: translateX(0);
 }
 
 
@@ -192,7 +203,7 @@ h2 a:hover {
   </div>
 
   <div class="main">
- <div class="topbar">
+<div class="topbar">
   <div style="display: flex; align-items: center;">
     <button id="menuToggle" class="menu-toggle">
       <i class="fas fa-bars"></i>
@@ -325,7 +336,9 @@ menuToggle.addEventListener('click', (e) => {
   e.stopPropagation();
   sidebarVisible = !sidebarVisible;
   sidebar.classList.toggle('show', sidebarVisible);
+  document.body.classList.toggle('sidebar-open', sidebarVisible); // optional blur
 });
+
 
 // Auto-close sidebar when clicking outside or on a link (mobile)
 document.addEventListener('click', (e) => {
