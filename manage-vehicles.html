@@ -159,50 +159,35 @@ h2 a:hover {
   display: none; /* hidden on desktop */
 }
 
-@/* ✅ Responsive layout for mobile */
 @media (max-width: 768px) {
-  .content {
-    padding: 15px; /* reduce padding */
-  }
-
-  .card {
-    padding: 15px;
-  }
-
-  form input,
-  form button {
-    font-size: 14px;
-    padding: 8px;
-  }
-
-  /* Make table scrollable on small screens */
-  .card table {
+  /* Show hamburger button */
+  .menu-toggle {
     display: block;
-    width: 100%;
-    overflow-x: auto;
-    white-space: nowrap;
   }
 
-  th, td {
-    padding: 8px;
-    font-size: 13px;
+  /* Sidebar hidden by default on mobile */
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 220px;
+    height: 100%;
+    background: var(--bg-sidebar);
+    transition: left 0.3s ease;
+    z-index: 1000;
   }
 
-  /* Fit the Add Vehicle form neatly */
-  #addVehicleForm {
-    display: flex;
-    flex-direction: column;
+  /* When visible */
+  .sidebar.show {
+    left: 0;
   }
 
-  #addVehicleForm input[type="file"] {
-    font-size: 13px;
+  /* Disable horizontal scroll */
+  body {
+    overflow-x: hidden;
   }
 
-  #addVehicleForm button {
-    width: 100%;
-  }
-
-  /* Adjust topbar for mobile */
+  /* Adjust topbar layout */
   .topbar {
     flex-direction: column;
     align-items: flex-start;
@@ -219,7 +204,45 @@ h2 a:hover {
     justify-content: flex-end;
   }
 
-  /* Prevent content overflow when sidebar is open */
+  /* Make content and cards fit neatly */
+  .content {
+    padding: 15px;
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  /* Form elements stack neatly */
+  form input,
+  form button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #vehiclePhoto {
+    font-size: 13px;
+  }
+
+  /* Table scrollable horizontally */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  th, td {
+    padding: 8px;
+    font-size: 13px;
+  }
+
+  /* Prevent content overflow when sidebar open */
   body.sidebar-open {
     overflow: hidden;
   }
