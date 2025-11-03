@@ -160,32 +160,151 @@ h2 a:hover {
 }
 
 
-
-
-/* --- Sidebar toggle behavior for mobile --- */
+/* --- Responsive Fix for Manage Vehicles Page (Up to Tablets) --- */
 @media (max-width: 768px) {
-  .sidebar {
-    position: fixed;
-    left: -240px; /* hide off-screen */
-    top: 0;
-    height: 100%;
-    z-index: 1000;
-    transition: left 0.3s ease;
+  html, body {
+    overflow-x: hidden;
   }
 
-  .sidebar.show {
-    left: 0; /* show when toggled */
+  .sidebar {
+    width: 200px;
+  }
+
+  .topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .topbar h1 {
+    font-size: 18px;
+  }
+
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 14px;
+  }
+
+  .content {
+    padding: 15px;
+  }
+
+  form input,
+  form button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 10px;
+  }
+
+  th, td {
+    font-size: 13px;
+    padding: 6px;
+  }
+
+  .vehicle-photo {
+    width: 50px;
+    height: 35px;
+  }
+
+  .card {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .card h3 {
+    font-size: 17px;
+    text-align: center;
   }
 
   .menu-toggle {
-    display: block; /* show menu button */
-  }
-
-  .main {
-    flex-grow: 1;
+    display: block;
   }
 }
 
+
+/* --- Mobile Fix for Manage Vehicles Page --- */
+@media (max-width: 480px) {
+  /* Prevent side scrolling */
+  html, body {
+    overflow-x: hidden;
+  }
+
+  /* Adjust sidebar width */
+  .sidebar {
+    width: 200px;
+  }
+
+  /* Make topbar elements fit */
+  .topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+
+  .topbar h1 {
+    font-size: 16px;
+  }
+
+  .logout-btn {
+    padding: 6px 10px;
+    font-size: 13px;
+  }
+
+  /* Adjust content spacing */
+  .content {
+    padding: 15px;
+  }
+
+  /* Make form fields smaller and stacked */
+  form input,
+  form button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  /* Table scrolls horizontally if needed */
+  table {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    border-radius: 10px;
+  }
+
+  th, td {
+    font-size: 12px;
+    padding: 6px;
+  }
+
+  .vehicle-photo {
+    width: 45px;
+    height: 30px;
+  }
+
+  /* Reduce card padding for smaller screens */
+  .card {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  /* Center the Add Vehicle header */
+  .card h3 {
+    font-size: 16px;
+    text-align: center;
+  }
+
+  /* Make sidebar toggle visible */
+  .menu-toggle {
+    display: block;
+  }
+}
 
 
 
