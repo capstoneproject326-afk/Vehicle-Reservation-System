@@ -161,12 +161,17 @@ h2 a:hover {
 }
 
 @media (max-width: 768px) {
-  /* Show hamburger button */
+  /* Ensure no horizontal overflow */
+  html, body {
+    width: 100%;
+    overflow-x: hidden;
+  }
+
+  /* Sidebar responsive */
   .menu-toggle {
     display: block;
   }
 
-  /* Sidebar hidden by default on mobile */
   .sidebar {
     position: fixed;
     left: -250px;
@@ -178,92 +183,93 @@ h2 a:hover {
     z-index: 1000;
   }
 
-  /* When visible */
   .sidebar.show {
     left: 0;
   }
 
-  /* Disable horizontal scroll */
-  body {
-    overflow-x: hidden;
+  /* Topbar adjustment */
+  .topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    flex-wrap: wrap;
   }
 
-  /* Adjust topbar layout */
- /* Fix topbar alignment */
-.topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 20px;
-}
+  .topbar h1 {
+    font-size: 18px;
+  }
 
-.topbar h1 {
-  margin: 0;
-  font-size: 20px;
-  line-height: 1;
-}
+  .logout-btn {
+    padding: 8px 12px;
+    font-size: 14px;
+  }
 
-.actions {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Ensure Logout button vertically centers */
-.logout-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 38px;
-}
-
-
-  /* Make content and cards fit neatly */
+  /* Content + Cards full width */
   .content {
-    padding: 15px;
+    padding: 12px;
   }
 
   .card {
-    padding: 15px;
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 16px;
   }
 
-  /* Form elements stack neatly */
-  form input,
-  form button {
-    font-size: 14px;
-    padding: 8px;
-  }
-
+  /* Form fields */
   form {
     display: flex;
     flex-direction: column;
+    gap: 8px;
+  }
+
+  form input, form button {
+    width: 100%;
+    font-size: 14px;
+    padding: 8px;
   }
 
   #vehiclePhoto {
     font-size: 13px;
   }
 
-  /* Table scrollable horizontally */
-  table {
+  /* Make table fully scrollable on small screen */
+  .card table {
     display: block;
     width: 100%;
     overflow-x: auto;
-    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
   }
 
   th, td {
     padding: 8px;
     font-size: 13px;
+    text-align: left;
   }
 
-  /* Prevent content overflow when sidebar open */
+  /* Prevent elements from going off-screen */
+  table, th, td, input, button {
+    max-width: 100%;
+    word-wrap: break-word;
+  }
+
+  /* Ensure Add Vehicle title fits */
+  h3 {
+    font-size: 16px;
+  }
+
+  /* Prevent overflow when sidebar open */
   body.sidebar-open {
     overflow: hidden;
   }
 }
 
 
-
+/* Global fix to prevent mobile overflow */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
 
 
 
