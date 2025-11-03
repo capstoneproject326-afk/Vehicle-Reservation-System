@@ -1,82 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Ongoing Trips</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <style>
-    :root {
-      --bg-main: #6d87c7;
-    --bg-sidebar: rgba(51, 51, 51, 1);
-      --bg-topbar: rgba(255, 255, 255, 0.8);
-      --text-color: #1f2937;
-      --card-bg: rgba(255, 255, 255, 0.3);
-    }
-    body.dark {
-      --bg-main: #6d87c7;
+<meta charset="UTF-8" />
+<title>Confirmed Reservations</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root {
+  --bg-main: #2E4F9E;
  --bg-sidebar: rgba(51, 51, 51, 1);
-      --bg-topbar: rgba(30,41,59,0.95);
-      --text-color: #f8fafc;
-      --card-bg: rgba(51,65,85,0.5);
-    }
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Segoe UI',sans-serif;display:flex;min-height:100vh;background-color: var(--bg-main);transition:0.3s;}
+  --bg-topbar: rgba(255, 255, 255, 0.8);
+  --text-color: #1f2937;
+  --card-bg: rgba(255, 255, 255, 0.3);
+}
 
-    /* Sidebar */
-    .sidebar{
-      width:240px;background:var(--bg-sidebar);color:#fff;
-      display:flex;flex-direction:column;backdrop-filter:blur(10px);
-    }
-    .sidebar h2{text-align:center;padding:18px 10px;font-size:18px;background:rgba(46, 110, 76, 1);}
-    .sidebar nav{display:flex;flex-direction:column;margin-top:10px;}
-    .nav-link{
-      padding:12px 20px;font-size:15px;color:#cbd5e0;text-decoration:none;
-      display:flex;align-items:center;gap:10px;border-left:4px solid transparent;
-      transition:all 0.3s;
-    }
-    .nav-link:hover{
-      background:rgba(255,255,255,0.1);color:#fff;border-left:4px solid #60a5fa;padding-left:26px;
-    }
-    .nav-link.active{background:#2563eb;color:#fff;border-left:4px solid #3b82f6;}
+body.dark {
+  --bg-main:#2E4F9E;
+ --bg-sidebar: rgba(51, 51, 51, 1);
+  --bg-topbar: rgba(30, 41, 59, 0.95);
+  --text-color: #f8fafc;
+  --card-bg: rgba(51, 65, 85, 0.5);
+}
 
-    /* Main content */
-    .main{flex-grow:1;display:flex;flex-direction:column;}
-    .topbar{
-      background:var(--bg-topbar);padding:16px 24px;
-      display:flex;justify-content:space-between;align-items:center;
-      backdrop-filter:blur(10px);box-shadow:0 1px 4px rgba(0,0,0,0.1);
-    }
-    .topbar h1{font-size:20px;color:var(--text-color);}
-    .topbar .actions{display:flex;align-items:center;gap:10px;}
-    .topbar button{border:none;border-radius:6px;cursor:pointer;padding:10px;}
-    .topbar .dark-mode-toggle{background:#1f2937;color:#fff;}
-    .topbar .logout-btn{background:#dc3545;color:#fff;font-weight:bold;}
+* { margin:0; padding:0; box-sizing:border-box; }
 
-    /* Content */
-    .content{padding:30px 40px;flex-grow:1;overflow-y:auto;}
-    h2.page-title{text-align:center;margin-bottom:20px;color: var(--text-color);}
+body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-main);
+  transition: background 0.3s ease;
+}
 
-    .trip-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 20px;
-    }
-    .trip {
-      background-color: #fff;padding:20px;border-radius:10px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.1);
-      transition: transform 0.2s ease-in-out;
-    }
-    .trip:hover{transform: translateY(-4px);}
-    .trip p{margin:6px 0;font-size:0.95rem;}
-    .trip p strong{display:inline-block;width:140px;font-weight:600;}
-    .buttons{text-align:center;margin-top:30px;}
-    button.action-btn{padding:10px 20px;margin:0 10px;background-color:#2c3e50;color:white;border:none;border-radius:6px;cursor:pointer;}
-    button.action-btn:hover{background-color:#1a252f;}
-    .no-trips{text-align:center;font-size:1.1rem;color:#777;}
-    @media (max-width: 480px){
-      .trip p strong{width:auto;display:block;margin-bottom:3px;}
-    }
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: var(--bg-sidebar);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+}
+
+.sidebar h2 {
+  text-align: center;
+  padding: 18px 10px;
+  font-size: 18px;
+  background: rgba(46, 110, 76, 1);
+}
+
+.sidebar nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+}
+
+.nav-link {
+  padding: 12px 20px;
+  font-size: 15px;
+  color: #cbd5e0;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-left: 4px solid transparent;
+  transition: all 0.3s;
+}
+
+.nav-link:hover {
+  background-color: rgba(255,255,255,0.1);
+  color: #fff;
+  border-left: 4px solid #60a5fa;
+  padding-left: 26px;
+}
+
+.nav-link.active {
+  background-color: #2563eb;
+  color: #fff;
+  border-left: 4px solid #3b82f6;
+}
+
+/* Main content */
+.main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(1px);
+  background-color: var(--card-bg);
+}
+
+.topbar {
+  background: var(--bg-topbar);
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.topbar h1 {
+  font-size: 20px;
+  color: var(--text-color);
+}
+
+.dark-mode-toggle {
+  background: ##2E4F9E;
+  color: #fff;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  margin-left: 10px;
+  cursor: pointer;
+}
+
+.logout-btn {
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  padding: 10px 14px;
+  font-size: 14px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Content area */
+.content {
+  padding: 30px 40px;
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.reservation {
+  background: var(--card-bg);
+  padding: 18px;
+  margin: 15px 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+}
+
+.reservation p {
+  margin: 8px 0;
+  font-size: 0.95rem;
+}
+
+.reservation p strong {
+  width: 140px;
+  display: inline-block;
+}
+
+@media (max-width: 600px) {
+  .topbar {
+    flex-direction: row;        /* keep them in a row */
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;            /* allow wrapping if too long */
+    gap: 10px;
+    padding: 12px 16px;         /* smaller padding for mobile */
+  }
+
+  .topbar h1 {
+    font-size: 18px;            /* smaller font on mobile */
+  }
+
+  .logout-btn {
+    padding: 8px 12px;          /* smaller button */
+    font-size: 13px;
+  }
+}
+
 
 h2 a {
   text-decoration: none; /* remove underline */
@@ -86,6 +177,9 @@ h2 a {
 h2 a:hover {
   color: #60a5fa; /* optional hover color */
 }
+
+
+
 
 
 /* --- Mobile sidebar toggle styles --- */
@@ -99,130 +193,162 @@ h2 a:hover {
 }
 
 @media (max-width: 768px) {
-  .content {
-    padding: 20px;
+  .menu-toggle {
+    display: block;
   }
-  .topbar h1 {
-    font-size: 18px;
+
+  .sidebar {
+    position: fixed;
+    left: -250px;
+    top: 0;
+    width: 220px;
+    height: 100%;
+    background: var(--bg-sidebar);
+    transition: left 0.3s ease;
+    z-index: 1000;
   }
-  .logout-btn {
-    padding: 8px 12px;
-    font-size: 14px;
+
+  .sidebar.show {
+    left: 0;
   }
-  .trip {
-    padding: 15px;
-  }
-  .trip-container {
-    grid-template-columns: 1fr; /* Single column for mobile */
+
+  body {
+    overflow-x: hidden;
   }
 }
 
 
 
-  </style>
+
+
+
+</style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-<h2><a href="admin_dashboard.html">CTU Admin</a></h2>
 
-    <nav>
-      <a href="vehicle-reservations.html" class="nav-link"><i class="fas fa-car"></i><span class="link-text">Vehicle Reservations</span></a>
-      <a href="manage-vehicles.html" class="nav-link"><i class="fas fa-tools"></i><span class="link-text">Manage Vehicles</span></a>
-      <a href="registered-drivers.html" class="nav-link"><i class="fas fa-id-badge"></i><span class="link-text">Registered Drivers</span></a>
-      <a href="confirmed-reservations.html" class="nav-link"><i class="fas fa-check-circle"></i><span class="link-text">Confirmed Reservations</span></a>
-      <a href="complete.html" class="nav-link"><i class="fas fa-file-alt"></i><span class="link-text">Completed Trips</span></a>
-      <a href="ontrip.html" class="nav-link active"><i class="fas fa-route"></i><span class="link-text">Ongoing Trips</span></a>
-       <a href="mapview.html" class="nav-link"><i class="fas fa-map"></i><span class="link-text">Map View</span></a>
-      <a href="change-password.html" class="nav-link"><i class="fas fa-key"></i><span class="link-text">Change Password</span></a>
-    </nav>
-  </div>
+<!-- Sidebar -->
+<div class="sidebar">
+ <h2><a href="admin_dashboard.html">CTU Admin</a></h2>
+
+  <nav>
+    <a href="vehicle-reservations.html" class="nav-link"><i class="fas fa-car"></i>Vehicle Reservations</a>
+    <a href="manage-vehicles.html" class="nav-link"><i class="fas fa-tools"></i>Manage Vehicles</a>
+    <a href="registered-drivers.html" class="nav-link"><i class="fas fa-id-badge"></i>Registered Drivers</a>
+    <a href="confirmed-reservations.html" class="nav-link active"><i class="fas fa-check-circle"></i>Confirmed Reservations</a>
+    <a href="complete.html" class="nav-link"><i class="fas fa-file-alt"></i>Complete</a>
+    <a href="ontrip.html" class="nav-link"><i class="fas fa-route"></i>On Trip</a>
+    <a href="mapview.html" class="nav-link"><i class="fas fa-map"></i><span class="link-text">Map View</span></a>
+    <a href="change-password.html" class="nav-link"><i class="fas fa-key"></i>Change Password</a>
+  </nav>
+</div>
 
 <div class="main">
   <div class="topbar">
- <div style="display: flex; align-items: center; gap: 10px;">
-  <button id="menuToggle" class="menu-toggle">
-    <i class="fas fa-bars"></i>
-  </button>
-  <h1>Ongoing Trips</h1>
-</div>
-<div>
-  <button id="logout" class="logout-btn">Logout</button>
-</div>
-</div> <!-- ✅ properly closes .topbar -->
-
-<div class="content">
-  <h2 class="page-title">Ongoing Trip List</h2>
-  <div class="trip-container" id="tripList"></div>
-  <div class="buttons"></div>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <button id="menuToggle" class="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+  <h1>Confirmed Reservations</h1>
+  </div>
+  <div>
+    <button id="logout" class="logout-btn">Logout</button>
+  </div>
 </div>
 
 
 
 
 
- 
+  <div class="content">
+    <div id="confirmedList"></div>
+  </div>
+</div>
 
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
+  authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
+  databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
+  projectId: "vehicle-management-syste-8f7fe",
+  storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
+  messagingSenderId: "423136689247",
+  appId: "1:423136689247:web:47dc93d0a171f06f096fea",
+  measurementId: "G-PF0808T11H"
+};
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const reservationsRef = ref(db, 'reservations');
+const driversRef = ref(db, 'drivers');
+const confirmedList = document.getElementById('confirmedList');
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
-      authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
-      databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
-      projectId: "vehicle-management-syste-8f7fe",
-      storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
-      messagingSenderId: "423136689247",
-      appId: "1:423136689247:web:47dc93d0a171f06f096fea",
-      measurementId: "G-PF0808T11H"
-    };
+onAuthStateChanged(auth, user => {
+  if (!user) window.location.href = "admin-login.html";
+  else loadConfirmedReservations();
+});
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const auth = getAuth(app);
-    const tripList = document.getElementById("tripList");
+async function loadConfirmedReservations() {
+  confirmedList.innerHTML = '';
+  const [reservationsSnap, driversSnap] = await Promise.all([get(reservationsRef), get(driversRef)]);
+  const reservations = reservationsSnap.val();
+  const drivers = driversSnap.val();
 
-    onAuthStateChanged(auth, user => {
-      if(!user){
-        alert("Please login first.");
-        window.location.href = "admin-login.html";
-        return;
-      }
-      const reservationsRef = ref(db, "reservations");
-      onValue(reservationsRef, snapshot => {
-        tripList.innerHTML = "";
-        let found = false;
-        snapshot.forEach(child => {
-          const data = child.val();
-          if(data.status === "ONTRIP"){
-            found = true;
-            const div = document.createElement("div");
-            div.className = "trip";
-            div.innerHTML = `
-              <p><strong>Name:</strong> ${data.name || "N/A"}</p>
-              <p><strong>Destination:</strong> ${data.destination || "N/A"}</p>
-              <p><strong>Vehicle:</strong> ${data.vehicle || "N/A"}</p>
-              <p><strong>Plate:</strong> ${data.plate || "N/A"}</p>
-              <p><strong>Date:</strong> ${data.date || "N/A"}</p>
-              <p><strong>Time Slot:</strong> ${data.timeSlot || "N/A"}</p>
-              <p><strong>Driver:</strong> ${data.driver || "N/A"}</p>
-              <p><strong>Start Time:</strong> ${data.tripStartTime || "N/A"}</p>
-              <p><strong>Status:</strong> <span style="color: #f39c12;">ONGOING</span></p>
-            `;
-            tripList.appendChild(div);
+  if (!reservations) {
+    confirmedList.innerHTML = "<p>No confirmed reservations.</p>";
+    return;
+  }
+
+  Object.entries(reservations).forEach(([id, r]) => {
+    if (r.status === 'approved' && r.driverConfirmation === "Confirmed") {
+      let driverFullName = "N/A";
+      if (drivers) {
+        for (const [key, driver] of Object.entries(drivers)) {
+          if ((driver.email && r.driver && driver.email.trim().toLowerCase() === r.driver.trim().toLowerCase()) ||
+              (driver.name && r.driver && driver.name.trim().toLowerCase() === r.driver.trim().toLowerCase())) {
+            driverFullName = driver.name || driver.fullName || "N/A";
+            break;
           }
-        });
-        if(!found) tripList.innerHTML = "<p class='no-trips'>No ongoing trips found.</p>";
-      });
-    });
+        }
+      }
 
-    document.getElementById("logout").onclick = () => signOut(auth).then(()=> window.location.href="driver-login.html");
-    function toggleDarkMode(){ document.body.classList.toggle('dark'); }
-  // Sidebar toggle for mobile
+      const div = document.createElement('div');
+      div.className = 'reservation';
+      div.innerHTML = `
+        <p><strong>Name:</strong> ${r.name || 'N/A'}</p>
+        <p><strong>Department:</strong> ${r.department || 'N/A'}</p>
+        <p><strong>Purpose:</strong> ${r.purpose || 'N/A'}</p>
+        <p><strong>Destination:</strong> ${r.destination || 'N/A'}</p>
+        <p><strong>Date:</strong> ${r.date || 'N/A'}</p>
+        <p><strong>Time Slot:</strong> ${r.timeSlot || 'N/A'}</p>
+        <p><strong>Vehicle:</strong> ${r.vehicle || 'N/A'}</p>
+        <p><strong>Driver:</strong> ${driverFullName}</p>
+        <p><strong>Status:</strong> ✅ Confirmed by Driver</p>
+      `;
+      confirmedList.appendChild(div);
+    }
+  });
+}
+
+document.getElementById('logout').onclick = () => {
+  signOut(auth).then(() => window.location.href = "admin-login.html");
+};
+
+function toggleDarkMode() {
+  document.body.classList.toggle('dark');
+}
+
+// Highlight active link in sidebar
+const current = location.pathname.split('/').pop();
+document.querySelectorAll('.nav-link').forEach(link => {
+  if (link.getAttribute('href') === current) link.classList.add('active');
+});
+
+    // Sidebar toggle for mobile
 const sidebar = document.querySelector('.sidebar');
 const menuToggle = document.getElementById('menuToggle');
 let sidebarVisible = false;
@@ -242,16 +368,8 @@ document.addEventListener('click', (e) => {
   }
 });
 
-document.querySelectorAll('.nav-link').forEach(link => {
-  link.addEventListener('click', () => {
-    if (window.innerWidth <= 768) {
-      sidebarVisible = false;
-      sidebar.classList.remove('show');
-    }
-  });
-});
 
+</script>
 
-  </script>
 </body>
 </html>
