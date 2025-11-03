@@ -2,206 +2,382 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin Login - CTU Vehicle System</title>
+  <title>CTU Admin Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    :root {
+      --bg-main: rgba(46, 79, 158, 1);
+      --bg-sidebar: rgba(51, 51, 51, 1);
+      --bg-topbar: rgba(255, 255, 255, 0.8);
+      --text-color: #1f2937;
+      --card-bg: rgba(255, 255, 255, 0.3);
     }
 
-    body {
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(to right, #dce3ee, #f5f8fc);
+    body.dark {
+      --bg-main: #1e293b;
+      --bg-sidebar: rgba(51, 51, 51, 1);
+      --bg-topbar: rgba(30, 41, 59, 0.95);
+      --text-color: #f8fafc;
+      --card-bg: rgba(51, 65, 85, 0.5);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  min-height: 100vh;   /* instead of height: 100vh */
+  flex-direction: column; 
+  overflow-x: hidden;  /* allow vertical scroll */
+  background-color: var(--bg-main);
+  transition: background 0.3s ease;
+}
+
+
+    .sidebar {
+      width: 240px;
+      background: var(--bg-sidebar);
+      color: #fff;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      flex-direction: column;
+      backdrop-filter: blur(10px);
     }
-
-    .container {
-      background: #ffffff;
-      padding: 40px 30px;
-      border-radius: 16px;
-      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
-    }
-
-    .logo {
-      margin-bottom: 20px;
-    }
-
-    .logo img {
-      width: 60px;
-    }
-
-    h2 {
-      color: #003366;
-      margin-bottom: 25px;
-    }
-
-    label {
-      display: block;
-      text-align: left;
-      margin-top: 15px;
-      font-weight: 600;
-      color: #333;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    .sidebar h2 { text-align: center; padding: 18px 10px; font-size: 18px; background: rgba(46, 110, 76, 1); }
+    .sidebar nav { display: flex; flex-direction: column; margin-top: 10px; }
+    .nav-link {
+      padding: 12px 20px;
       font-size: 15px;
-      transition: border-color 0.3s;
+      color: #cbd5e0;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-left: 4px solid transparent;
     }
-
-    input:focus {
-      border-color: #007BFF;
-      outline: none;
+    .nav-link:hover {
+      background-color: rgba(255,255,255,0.1);
+      color: #fff;
+      border-left: 4px solid #60a5fa;
+      padding-left: 26px;
     }
+    .nav-link.active { background-color: #2563eb; color: #ffffff; border-left: 4px solid #3b82f6; }
 
-    .password-wrapper {
-      position: relative;
+    .main { flex-grow: 1; display: flex; flex-direction: column; backdrop-filter: blur(1px); background-color: var(--card-bg); }
+    .topbar {
+      background: var(--bg-topbar);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      top: 44px;
-      cursor: pointer;
-      font-size: 14px;
-      color: #007BFF;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #2E4F9E;
-      color: white;
+    .topbar h1 { font-size: 20px; color: var(--text-color); }
+    .dark-mode-toggle {
+      background: #1f2937;
+      color: #fff;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      padding: 10px;
+      border-radius: 6px;
+      margin-left: 10px;
       cursor: pointer;
-      margin-top: 20px;
-      transition: background 0.3s;
     }
-
-    button:hover {
-      background: #4677e9;
-    }
-
-    .spinner {
-      display: none;
-      margin: 10px auto;
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #007BFF;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    .error-message {
-      color: red;
+    .logout-btn {
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
       font-size: 14px;
-      margin-top: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
     }
+
+    .content { padding: 30px 40px; flex-grow: 1; overflow-y: auto; }
+    .content h2 { font-size: 26px; color: var(--text-color); margin-bottom: 20px; }
+
+    /* Dashboard cards */
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: var(--bg-topbar);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .card i {
+      font-size: 30px;
+      margin-bottom: 10px;
+      color: #2563eb;
+    }
+    .card h3 {
+      font-size: 24px;
+      margin: 5px 0;
+      color: var(--text-color);
+    }
+    .card p { color: var(--text-color); }
+
+h2 a {
+  text-decoration: none; /* remove underline */
+  color: inherit;        /* use same color as h2 */
+  display: block;        /* make the whole h2 area clickable */
+}
+h2 a:hover {
+  color: #60a5fa; /* optional hover color */
+}
+
+
+/* Hamburger button */
+.menu-toggle {
+  background: none;
+  border: none;
+  color: var(--text-color);
+  font-size: 22px;
+  cursor: pointer;
+  display: none;
+  margin-right: 10px;
+}
+
+@media (max-width: 768px) {
+  body {
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+
+  .menu-toggle {
+    display: block;
+  }
+
+  .sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 220px;
+    background: var(--bg-sidebar);
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  .sidebar.show {
+    transform: translateX(0);
+  }
+
+ .main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--card-bg);
+  overflow: auto;   /* allow scrolling inside if needed */
+}
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+
+  .content {
+    padding: 20px;
+  }
+
+  .summary {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .card h3 {
+    font-size: 20px;
+  }
+
+  .card p {
+    font-size: 13px;
+  }
+}
+
+
+
+
   </style>
 </head>
 <body>
+  <div class="sidebar" id="sidebar">
+  <h2><a href="admin_dashboard.html">CTU Admin</a></h2>
 
-  <div class="container">
-    <div class="logo">
-      <img src="https://img.icons8.com/ios-filled/50/000000/admin-settings-male.png" alt="Admin">
-    </div>
-    <h2>Admin Login</h2>
-    <form id="loginForm">
-      <label for="email">Admin Email</label>
-      <input type="email" id="email" placeholder="Enter your email" required />
+    <nav>
+      <a href="vehicle-reservations.html" class="nav-link"><i class="fas fa-car"></i><span class="link-text">Vehicle Reservations</span></a>
+      <a href="manage-vehicles.html" class="nav-link"><i class="fas fa-tools"></i><span class="link-text">Manage Vehicles</span></a>
+      <a href="registered-drivers.html" class="nav-link"><i class="fas fa-id-badge"></i><span class="link-text">Registered Drivers</span></a>
+      <a href="confirmed-reservations.html" class="nav-link"><i class="fas fa-check-circle"></i><span class="link-text">Confirmed Reservations</span></a>
+      <a href="complete.html" class="nav-link"><i class="fas fa-file-alt"></i><span class="link-text">Complete</span></a>
+      <a href="ontrip.html" class="nav-link"><i class="fas fa-route"></i><span class="link-text">On Trip</span></a>
+      <a href="mapview.html" class="nav-link"><i class="fas fa-map"></i><span class="link-text">Map View</span></a>
+      <a href="change-password.html" class="nav-link"><i class="fas fa-key"></i><span class="link-text">Change Password</span></a>
+    
+    
+    </nav>
+  </div>
 
-      <label for="password">Password</label>
-      <div class="password-wrapper">
-        <input type="password" id="password" placeholder="Enter your password" required />
-        <span class="toggle-password" id="togglePassword">Show</span>
+  <div class="main">
+ <div class="topbar">
+  <div style="display: flex; align-items: center;">
+    <button id="menuToggle" class="menu-toggle">
+      <i class="fas fa-bars"></i>
+    </button>
+    <h1>Admin Dashboard</h1>
+  </div>
+  <div>
+    <button id="logout" class="logout-btn">Logout</button>
+  </div>
+</div>
+
+
+    <div class="content">
+      <h2>Welcome, Administrator 👋</h2>
+
+      <div class="summary">
+        <div class="card">
+          <i class="fas fa-car"></i>
+          <h3 id="vehicleCount">0</h3>
+          <p>Total Vehicles</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-id-badge"></i>
+          <h3 id="driverCount">0</h3>
+          <p>Registered Drivers</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-check-circle"></i>
+          <h3 id="approvedCount">0</h3>
+          <p>Approved Reservations</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-hourglass-half"></i>
+          <h3 id="pendingCount">0</h3>
+          <p>Pending Reservations</p>
+        </div>
+        <div class="card">
+          <i class="fas fa-file-alt"></i>
+          <h3 id="completedCount">0</h3>
+          <p>Completed Trips</p>
+        </div>
       </div>
-
-      <button type="submit">Login</button>
-      <div class="spinner" id="spinner"></div>
-      <div id="errorMessage" class="error-message"></div>
-    </form>
+    </div>
   </div>
 
   <script type="module">
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-database.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
-    authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
-    databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
-    projectId: "vehicle-management-syste-8f7fe",
-    storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
-    messagingSenderId: "423136689247",
-    appId: "1:423136689247:web:47dc93d0a171f06f096fea",
-    measurementId: "G-PF0808T11H"
-  };
+    const firebaseConfig = {
+      apiKey: "AIzaSyA1Guf5lPfPsgtpBTm4MY3r3N9a8wfQumY",
+      authDomain: "vehicle-management-syste-8f7fe.firebaseapp.com",
+      databaseURL: "https://vehicle-management-syste-8f7fe-default-rtdb.firebaseio.com",
+      projectId: "vehicle-management-syste-8f7fe",
+      storageBucket: "vehicle-management-syste-8f7fe.firebasestorage.app",
+      messagingSenderId: "423136689247",
+      appId: "1:423136689247:web:47dc93d0a171f06f096fea",
+      measurementId: "G-PF0808T11H"
+    };
+
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    const errorDiv = document.getElementById("errorMessage");
-    const spinner = document.getElementById("spinner");
-    const togglePassword = document.getElementById("togglePassword");
-    const passwordInput = document.getElementById("password");
-
-    togglePassword.addEventListener("click", () => {
-      const type = passwordInput.getAttribute("type") === "password" ? "text" : "password";
-      passwordInput.setAttribute("type", type);
-      togglePassword.textContent = type === "password" ? "Show" : "Hide";
-    });
-
-    document.getElementById("loginForm").addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = document.getElementById("email").value.trim();
-      const password = passwordInput.value.trim();
-      errorDiv.textContent = "";
-      spinner.style.display = "block";
-
-      try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const uid = userCredential.user.uid;
-        const userRef = ref(db, "users/" + uid);
-        const snapshot = await get(userRef);
-
-        if (snapshot.exists()) {
-          const userData = snapshot.val();
-          if (userData.role === "admin") {
-            window.location.href = "admin_dashboard.html";
-          } else {
-            errorDiv.textContent = "Access denied. You are not authorized as an admin.";
-          }
-        } else {
-          errorDiv.textContent = "User role not found in the database.";
-        }
-      } catch (error) {
-        errorDiv.textContent = "Login failed: " + error.message;
-      } finally {
-        spinner.style.display = "none";
+    // Protect admin page
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        alert("You must log in as admin first.");
+        window.location.href = "admin-login.html";
       }
     });
-  </script>
 
+    document.getElementById('logout').addEventListener('click', () => {
+      signOut(auth).then(() => {
+        alert("Logged out");
+        window.location.href = "admin-login.html";
+      });
+    });
+
+    // Highlight current nav
+    const current = location.pathname.split('/').pop();
+    document.querySelectorAll('.nav-link').forEach(link => {
+      if (link.getAttribute('href') === current) {
+        link.classList.add('active');
+      }
+    });
+
+    function toggleDarkMode() {
+      document.body.classList.toggle('dark');
+    }
+
+    // Fetch dashboard counts
+    const vehicleCount = document.getElementById("vehicleCount");
+    const driverCount = document.getElementById("driverCount");
+    const approvedCount = document.getElementById("approvedCount");
+    const pendingCount = document.getElementById("pendingCount");
+    const completedCount = document.getElementById("completedCount");
+
+    onValue(ref(db, "vehicles"), (snapshot) => {
+      vehicleCount.textContent = snapshot.size || snapshot.numChildren();
+    });
+
+    onValue(ref(db, "drivers"), (snapshot) => {
+      driverCount.textContent = snapshot.size || snapshot.numChildren();
+    });
+
+    onValue(ref(db, "reservations"), (snapshot) => {
+      let approved = 0, pending = 0, completed = 0;
+      snapshot.forEach(child => {
+        const data = child.val();
+        const status = (data.status || "").toLowerCase();
+        if (status === "approved") approved++;
+        if (status === "pending") pending++;
+        if (status === "completed") completed++;
+      });
+      approvedCount.textContent = approved;
+      pendingCount.textContent = pending;
+      completedCount.textContent = completed;
+    });
+
+
+
+    // Sidebar toggle for mobile
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menuToggle');
+let sidebarVisible = false;
+
+menuToggle.addEventListener('click', (e) => {
+  e.stopPropagation();
+  sidebarVisible = !sidebarVisible;
+  sidebar.classList.toggle('show', sidebarVisible);
+});
+
+// Auto-close sidebar when clicking outside or on a link (mobile)
+document.addEventListener('click', (e) => {
+  if (window.innerWidth <= 768 && sidebarVisible) {
+    if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+      sidebarVisible = false;
+      sidebar.classList.remove('show');
+    }
+  }
+});
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      sidebarVisible = false;
+      sidebar.classList.remove('show');
+    }
+  });
+});
+
+    
+  </script>
 </body>
 </html>
