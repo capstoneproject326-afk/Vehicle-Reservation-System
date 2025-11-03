@@ -204,12 +204,17 @@ h2 a:hover {
   }
 
   /* Adjust topbar layout */
-  .topbar {
+.topbar {
     flex-direction: column;
     align-items: flex-start;
     gap: 10px;
     padding: 12px 16px;
-  }
+}
+
+.topbar > div:last-child {
+    margin-left: auto; /* push logout to right */
+}
+
 
   .topbar h1 {
     font-size: 18px;
