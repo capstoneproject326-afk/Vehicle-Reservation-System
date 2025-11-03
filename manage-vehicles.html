@@ -159,28 +159,69 @@ h2 a:hover {
   display: none; /* hidden on desktop */
 }
 
+@/* ✅ Responsive layout for mobile */
 @media (max-width: 768px) {
-  .menu-toggle {
+  .content {
+    padding: 15px; /* reduce padding */
+  }
+
+  .card {
+    padding: 15px;
+  }
+
+  form input,
+  form button {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  /* Make table scrollable on small screens */
+  .card table {
     display: block;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
   }
 
-  .sidebar {
-    position: fixed;
-    left: -250px;
-    top: 0;
-    width: 220px;
-    height: 100%;
-    background: var(--bg-sidebar);
-    transition: left 0.3s ease;
-    z-index: 1000;
+  th, td {
+    padding: 8px;
+    font-size: 13px;
   }
 
-  .sidebar.show {
-    left: 0;
+  /* Fit the Add Vehicle form neatly */
+  #addVehicleForm {
+    display: flex;
+    flex-direction: column;
   }
 
-  body {
-    overflow-x: hidden;
+  #addVehicleForm input[type="file"] {
+    font-size: 13px;
+  }
+
+  #addVehicleForm button {
+    width: 100%;
+  }
+
+  /* Adjust topbar for mobile */
+  .topbar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .topbar h1 {
+    font-size: 18px;
+  }
+
+  .actions {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  /* Prevent content overflow when sidebar is open */
+  body.sidebar-open {
+    overflow: hidden;
   }
 }
 
