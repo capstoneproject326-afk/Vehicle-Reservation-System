@@ -212,7 +212,8 @@ h2 a:hover {
 </head>
 <body>
   <!-- Sidebar -->
-  <div class="sidebar">
+<div class="sidebar" id="sidebar">
+
     <h2><a href="admin_dashboard.html">CTU Admin</a></h2>
 
     <nav>
@@ -383,8 +384,7 @@ h2 a:hover {
     document.getElementById("logout").onclick = () => {
       signOut(auth).then(()=> window.location.href = "admin-login.html");
     };
-    document.getElementById("dashboardBtn").onclick = () => window.location.href = "admin_dashboard.html";
-
+ 
     function toggleDarkMode() { document.body.classList.toggle('dark'); }
   
   
