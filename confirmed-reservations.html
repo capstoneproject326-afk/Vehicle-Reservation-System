@@ -204,20 +204,21 @@ h2 a:hover {
   }
 
   /* Adjust topbar layout */
-.topbar {
-    flex-direction: column;
-    align-items: flex-start;
+  .topbar {
+    flex-direction: row;   /* keep items in a row */
+    flex-wrap: wrap;       /* allow wrapping if too narrow */
+    align-items: center;   /* vertically center items */
     gap: 10px;
     padding: 12px 16px;
-}
-
-.topbar > div:last-child {
-    margin-left: auto; /* push logout to right */
-}
-
+  }
 
   .topbar h1 {
     font-size: 18px;
+    flex: 1;               /* take remaining space to push logout right */
+  }
+
+  .topbar > div:last-child {
+    margin-left: auto;     /* pushes logout button to the right */
   }
 
   /* Reduce padding so it fits perfectly */
@@ -390,6 +391,19 @@ document.addEventListener('click', (e) => {
     }
   }
 });
+
+
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', () => {
+    if (window.innerWidth <= 768) {
+      sidebarVisible = false;
+      sidebar.classList.remove('show');
+    }
+  });
+});
+
+
+
 
 
 </script>
