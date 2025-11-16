@@ -238,7 +238,8 @@ h2 a:hover {
               <p><strong>Date:</strong> ${data.date || "N/A"}</p>
               <p><strong>Time Slot:</strong> ${data.timeSlot || "N/A"}</p>
               <p><strong>Driver:</strong> ${data.driver || "N/A"}</p>
-              <p><strong>Start Time:</strong> ${data.tripStartTime || "N/A"}</p>
+             <p><strong>Start Time:</strong> ${formatTime(data.tripStartTime)}</p>
+
               <p><strong>Status:</strong> <span style="color: #f39c12;">ONGOING</span></p>
             `;
             tripList.appendChild(div);
@@ -278,6 +279,24 @@ document.querySelectorAll('.nav-link').forEach(link => {
     }
   });
 });
+
+
+function formatTime(isoString) {
+  if (!isoString) return "N/A";
+  const date = new Date(isoString);
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric",
+    hour12: true
+  };
+
+  return date.toLocaleString("en-US", options);
+}
+
 
 
   </script>
