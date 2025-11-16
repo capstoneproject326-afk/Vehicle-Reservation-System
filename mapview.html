@@ -5,25 +5,101 @@
 <title>Booking Map Overview</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<!-- Leaflet CSS -->
+<!-- FontAwesome & Leaflet CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 
 <style>
-  body { margin: 0; font-family: "Poppins", sans-serif; background: #f5f6fa; }
-  header { background: #007bff; color: white; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
-  header h2 { margin: 0; font-size: 20px; }
-  header button { background: #dc3545; border: none; color: white; padding: 8px 14px; border-radius: 6px; cursor: pointer; }
-  #map { height: 90vh; width: 100%; }
+:root {
+  --bg-main: rgba(46, 79, 158, 1);
+  --bg-sidebar: rgba(51, 51, 51, 1);
+  --bg-topbar: rgba(255, 255, 255, 0.8);
+  --text-color: #1f2937;
+  --card-bg: rgba(255, 255, 255, 0.3);
+}
+body.dark {
+  --bg-main: #1e293b;
+  --bg-sidebar: rgba(51, 51, 51, 1);
+  --bg-topbar: rgba(30, 41, 59, 0.95);
+  --text-color: #f8fafc;
+  --card-bg: rgba(51, 65, 85, 0.5);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: "Poppins", sans-serif; display: flex; min-height: 100vh; background: var(--bg-main); transition: background 0.3s ease; }
+
+/* Sidebar */
+.sidebar {
+  width: 240px;
+  background: var(--bg-sidebar);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  transition: transform 0.3s ease;
+  z-index: 1000;
+}
+.sidebar h2 { text-align: center; padding: 18px 10px; font-size: 18px; background: rgba(46, 110, 76, 1); }
+.sidebar h2 a { color: #fff; text-decoration: none; display: block; }
+.sidebar nav { display: flex; flex-direction: column; margin-top: 10px; }
+.nav-link { padding: 12px 20px; font-size: 15px; color: #cbd5e0; text-decoration: none; display: flex; align-items: center; gap: 10px; border-left: 4px solid transparent; }
+.nav-link:hover { background-color: rgba(255,255,255,0.1); color: #fff; border-left: 4px solid #60a5fa; padding-left: 26px; }
+.nav-link.active { background-color: #2563eb; color: #ffffff; border-left: 4px solid #3b82f6; }
+
+/* Main content */
+.main { flex-grow: 1; margin-left: 240px; display: flex; flex-direction: column; }
+.topbar {
+  background: var(--bg-topbar); padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+}
+.topbar h1 { font-size: 20px; color: var(--text-color); }
+.logout-btn { background: #dc3545; color: #fff; border: none; padding: 10px 14px; font-size: 14px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+#map { flex-grow: 1; width: 100%; }
+
+/* Hamburger menu for mobile */
+.menu-toggle { background: none; border: none; color: var(--text-color); font-size: 22px; cursor: pointer; display: none; margin-right: 10px; }
+@media (max-width: 768px) {
+  body { flex-direction: column; }
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; }
+  .menu-toggle { display: inline-block; }
+}
+.sidebar.show { transform: translateX(0); }
 </style>
 </head>
 <body>
 
-<header>
-  <h2>Map View Summary</h2>
-  <button id="logoutBtn">Logout</button>
-</header>
+<!-- Sidebar -->
+<div class="sidebar" id="sidebar">
+  <h2><a href="admin_dashboard.html">CTU Admin</a></h2>
+  <nav>
+    <a href="vehicle-reservations.html" class="nav-link"><i class="fas fa-car"></i>Vehicle Reservations</a>
+    <a href="manage-vehicles.html" class="nav-link"><i class="fas fa-tools"></i>Manage Vehicles</a>
+    <a href="registered-drivers.html" class="nav-link"><i class="fas fa-id-badge"></i>Registered Drivers</a>
+    <a href="confirmed-reservations.html" class="nav-link"><i class="fas fa-check-circle"></i>Confirmed Reservations</a>
+    <a href="complete.html" class="nav-link"><i class="fas fa-file-alt"></i>Complete</a>
+    <a href="ontrip.html" class="nav-link"><i class="fas fa-route"></i>On Trip</a>
+    <a href="mapview.html" class="nav-link active"><i class="fas fa-map"></i>Map View</a>
+    <a href="change-password.html" class="nav-link"><i class="fas fa-key"></i>Change Password</a>
+  </nav>
+</div>
 
-<div id="map"></div>
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex; align-items:center;">
+      <button id="menuToggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
+      <h1>Map View Summary</h1>
+    </div>
+    <button id="logoutBtn" class="logout-btn">Logout</button>
+  </div>
+
+  <div id="map"></div>
+</div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script type="module">
@@ -41,117 +117,75 @@ const firebaseConfig = {
   appId: "1:423136689247:web:47dc93d0a171f06f096fea",
   measurementId: "G-PF0808T11H"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-const logoutBtn = document.getElementById("logoutBtn");
-
 // LOGOUT
-logoutBtn.onclick = () => {
+document.getElementById("logoutBtn").onclick = () => {
   signOut(auth).then(() => window.location.href = "admin-login.html")
     .catch(err => alert("Logout failed: " + err.message));
 };
 
-// MAP SETUP
+// MAP FUNCTIONALITY (unchanged)
 const map = L.map('map').setView([10.3157, 123.8854], 11);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-  attribution: '&copy; OpenStreetMap contributors'
-}).addTo(map);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap contributors' }).addTo(map);
 
-// GEOCODE ADDRESS TO COORDINATES
 async function geocodeAddress(address) {
   try {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
     const res = await fetch(url);
     const data = await res.json();
     if (data.length > 0) return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
-  } catch (err) {
-    console.error("Geocode error:", err);
-  }
+  } catch (err) { console.error("Geocode error:", err); }
   return null;
 }
 
 onAuthStateChanged(auth, user => {
   if (!user) window.location.href = "admin-login.html";
-
   const userEmail = user.email.trim().toLowerCase();
-  const isAdmin = userEmail === "admin@gmail.com"; // Replace with your admin email
+  const isAdmin = userEmail === "admin@gmail.com";
 
   onValue(ref(db, "reservations"), async snapshot => {
-    // Clear previous markers
     map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
-
     if (!snapshot.exists()) return;
-
     const bounds = [];
-
     for (const child of Object.values(snapshot.val())) {
       const data = child;
       let status = data.status?.trim().toLowerCase() || "";
       if (status.startsWith("comple")) status = "completed";
-
       const driverMatch = data.driverEmail?.trim().toLowerCase() === userEmail;
-
-      // Admin sees all, drivers see only their own bookings
-      if ((driverMatch || isAdmin) && ["pending", "approved", "ontrip", "completed"].includes(status) && data.landmark) {
+      if ((driverMatch || isAdmin) && ["pending","approved","ontrip","completed"].includes(status) && data.landmark) {
         const coords = await geocodeAddress(data.landmark);
         if (coords) {
           bounds.push([coords.lat, coords.lng]);
-
-          // Select icon based on status
           let iconUrl = '';
-         switch (status) {
-  case 'pending':
-    iconUrl = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; 
-    // 🟡 Yellow circle
-    break;
-
-  case 'approved':
-    iconUrl = 'https://cdn-icons-png.flaticon.com/512/845/845646.png'; 
-    // ✅ Green check mark
-    break;
-
-  case 'ontrip':
-    iconUrl = 'https://cdn-icons-png.flaticon.com/512/3097/3097144.png'; 
-    // 🚗 Small car
-    break;
-
-  case 'completed':
-    iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; 
-    // 🟢 Green circle
-    break;
-
-  default:
-    iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; 
-    // Default to green circle
-}
-
-
-          const vehicleIcon = L.icon({
-            iconUrl: iconUrl,
-            iconSize: [35, 35],
-            iconAnchor: [17, 35],
-            popupAnchor: [0, -35]
-          });
-
+          switch (status) {
+            case 'pending': iconUrl = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; break;
+            case 'approved': iconUrl = 'https://cdn-icons-png.flaticon.com/512/845/845646.png'; break;
+            case 'ontrip': iconUrl = 'https://cdn-icons-png.flaticon.com/512/3097/3097144.png'; break;
+            case 'completed': iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; break;
+            default: iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png';
+          }
+          const vehicleIcon = L.icon({ iconUrl, iconSize:[35,35], iconAnchor:[17,35], popupAnchor:[0,-35] });
           L.marker([coords.lat, coords.lng], { icon: vehicleIcon }).addTo(map)
-            .bindPopup(`
-              <strong>${data.name}</strong><br>
-              Destination: ${data.destination}<br>
-              Passenger: ${data.passengers || "N/A"}<br>
-              Status: ${data.status}<br>
-              Driver: ${data.driver || "N/A"}
-            `);
+            .bindPopup(`<strong>${data.name}</strong><br>Destination: ${data.destination}<br>Passenger: ${data.passengers||"N/A"}<br>Status: ${data.status}<br>Driver: ${data.driver||"N/A"}`);
         }
       }
     }
-
-    if (bounds.length > 0) map.fitBounds(bounds, { padding: [50, 50] });
+    if(bounds.length>0) map.fitBounds(bounds,{padding:[50,50]});
   });
 });
+
+// Sidebar toggle for mobile
+const sidebar = document.getElementById('sidebar');
+const menuToggle = document.getElementById('menuToggle');
+let sidebarVisible = false;
+menuToggle.addEventListener('click', e => { e.stopPropagation(); sidebarVisible = !sidebarVisible; sidebar.classList.toggle('show', sidebarVisible); });
+document.addEventListener('click', e => { if(window.innerWidth<=768 && sidebarVisible && !sidebar.contains(e.target)&&!menuToggle.contains(e.target)) { sidebarVisible=false; sidebar.classList.remove('show'); } });
+document.querySelectorAll('.nav-link').forEach(link => { link.addEventListener('click',()=>{ if(window.innerWidth<=768){ sidebarVisible=false; sidebar.classList.remove('show'); } }); });
 </script>
+
 </body>
 </html>
-
+      
