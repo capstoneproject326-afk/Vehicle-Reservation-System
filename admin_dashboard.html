@@ -26,8 +26,16 @@
 body {
   font-family: 'Segoe UI', sans-serif;
   display: flex;
-  min-height: 100vh; /* instead of height: 100vh */
+  min-height: 100vh;
   background-color: var(--bg-main);
+
+  /* Background Image */
+  background-image: url('ctu.png');
+  background-repeat: no-repeat;
+  background-size: 350px;     /* adjust size here */
+  background-position: center 120px; /* center + move down */
+  background-attachment: fixed; /* stays in place */
+  
   transition: background 0.3s ease;
 }
 
@@ -363,3 +371,4 @@ document.querySelectorAll('.nav-link').forEach(link => {
   </script>
 </body>
 </html>
+
