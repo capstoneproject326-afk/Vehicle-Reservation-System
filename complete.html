@@ -23,13 +23,24 @@
     }
 
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{
-      font-family:'Segoe UI',sans-serif;
-      display:flex;
-      min-height:100vh;
-      background-color: var(--bg-main);
-      transition:0.3s;
-    }
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  min-height: 100vh;
+
+  /* Main background */
+  background-color: var(--bg-main);
+
+  /* 🔹 CTU logo background */
+  background-image: url('ctu.png');
+  background-repeat: no-repeat;
+  background-size: 380px;             /* adjust size if needed */
+  background-position: center 130px;  /* center + slightly downward */
+  background-attachment: fixed;       /* keeps it behind content */
+
+  transition: 0.3s;
+}
+
 
     /* Sidebar */
     .sidebar{

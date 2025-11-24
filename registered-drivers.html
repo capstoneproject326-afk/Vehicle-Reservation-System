@@ -28,12 +28,22 @@
       box-sizing: border-box;
     }
 
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      min-height: 100vh;
-      background-color: var(--bg-main);
-    }
+  body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  min-height: 100vh;
+
+  /* Main background color */
+  background-color: var(--bg-main);
+
+  /* 🔥 Add CTU Background Image */
+  background-image: url('ctu.png');
+  background-repeat: no-repeat;
+  background-size: 380px;            /* adjust size here */
+  background-position: center 130px; /* center + push down a little */
+  background-attachment: fixed;      /* nice clean effect */
+
+  transition:
 
     /* Sidebar */
     .sidebar {

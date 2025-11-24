@@ -22,13 +22,21 @@
       --card-bg: rgba(51,65,85,0.5);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      display: flex;
-      min-height: 100vh;
-      background: var(--bg-main);
-      transition: 0.3s;
-    }
+  body {
+  font-family: 'Segoe UI', sans-serif;
+  display: flex;
+  min-height: 100vh;
+  background: var(--bg-main);
+  transition: 0.3s;
+
+  /* 🔥 Add CTU Background Image */
+  background-image: url('ctu.png');
+  background-repeat: no-repeat;
+  background-size: 380px;         /* adjust size here */
+  background-position: center 120px; /* center + move down */
+  background-attachment: fixed;   /* stays in place */
+}
+
     /* Sidebar */
     .sidebar {
       width: 240px;
