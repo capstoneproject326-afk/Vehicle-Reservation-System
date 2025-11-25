@@ -1,0 +1,150 @@
+<!-- CTU Theme A Applied -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CTU Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <style>
+    :root {
+      --bg-main: #002A5C;
+      --bg-sidebar: #001B3A;
+      --bg-topbar: #B22222;
+      --text-color: #ffffff;
+      --card-bg: rgba(255, 255, 255, 0.15);
+      --highlight: #D4A017;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: var(--bg-main);
+      background-image: url('/mnt/data/ctu.png');
+      background-repeat: no-repeat;
+      background-size: 300px;
+      background-position: center 140px;
+      background-attachment: fixed;
+      color: var(--text-color);
+    }
+
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background: var(--bg-sidebar);
+      padding-top: 20px;
+      color: white;
+    }
+
+    .sidebar h2 {
+      text-align: center;
+      padding: 15px 0;
+      background: var(--bg-topbar);
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .nav-link {
+      display: block;
+      padding: 12px 20px;
+      color: white;
+      text-decoration: none;
+      border-left: 4px solid transparent;
+    }
+
+    .nav-link:hover {
+      background: rgba(255,255,255,0.1);
+      border-left-color: var(--highlight);
+    }
+
+    .nav-link.active {
+      background: var(--bg-topbar);
+      border-left-color: var(--highlight);
+    }
+
+    /* Topbar */
+    .topbar {
+      height: 60px;
+      background: var(--bg-topbar);
+      margin-left: 250px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      justify-content: space-between;
+      color: white;
+    }
+
+    .logout-btn {
+      background: var(--bg-topbar);
+      border: 2px solid var(--highlight);
+      padding: 8px 12px;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: var(--highlight);
+    }
+
+    /* Main Content */
+    .content {
+      margin-left: 250px;
+      padding: 20px;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      padding: 20px;
+      border-radius: 10px;
+      border: 2px solid var(--highlight);
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .card i {
+      font-size: 40px;
+      color: var(--highlight);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>CTU Dashboard</h2>
+    <a class="nav-link active" href="#"><i class="fa fa-home"></i> Dashboard</a>
+    <a class="nav-link" href="#"><i class="fa fa-users"></i> Users</a>
+    <a class="nav-link" href="#"><i class="fa fa-box"></i> Inventory</a>
+    <a class="nav-link" href="#"><i class="fa fa-cog"></i> Settings</a>
+  </div>
+
+  <!-- Topbar -->
+  <div class="topbar">
+    <div>Welcome, Admin</div>
+    <button class="logout-btn">Logout</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <div class="card">
+      <i class="fa fa-chart-bar"></i>
+      <h3>Statistics Overview</h3>
+      <p>CTU-themed dashboard using Option A applied.</p>
+    </div>
+
+    <div class="card">
+      <i class="fa fa-clock"></i>
+      <h3>Recent Activity</h3>
+      <p>Logs and system updates appear here.</p>
+    </div>
+  </div>
+
+</body>
+</html>

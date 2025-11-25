@@ -7,12 +7,19 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <style>
     :root {
-      --bg-main: #2E4F9E;
-   --bg-sidebar: rgba(51, 51, 51, 1);
+      --bg-main: #ad3517;
+   --bg-sidebar: #1d4120e8;
       --bg-topbar: rgba(255, 255, 255, 0.8);
       --text-color: #1f2937;
       --card-bg: rgba(255, 255, 255, 0.3);
     }
+
+
+
+    
+
+     
+
 
     body.dark {
       --bg-main: #1e293b;
@@ -43,7 +50,7 @@
   background-position: center 130px; /* center + push down a little */
   background-attachment: fixed;      /* nice clean effect */
 
-  transition:
+
 
     /* Sidebar */
     .sidebar {
@@ -59,7 +66,7 @@
       text-align: center;
       padding: 18px 10px;
       font-size: 18px;
-      background: rgba(46, 110, 76, 1);
+      background: #d19e11;
     }
 
     .sidebar nav {
@@ -93,12 +100,14 @@
     }
 
     /* Main content */
-    .main {
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--card-bg);
-    }
+  .main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent; /* para makita ang red background */
+  backdrop-filter: none;
+}
+
 
     .topbar {
       background: var(--bg-topbar);
@@ -124,7 +133,7 @@
     }
 
     .logout-btn {
-      background: #dc3545;
+      background: #261574;
       color: #fff;
       border: none;
       padding: 10px 14px;
