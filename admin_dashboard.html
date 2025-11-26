@@ -157,6 +157,12 @@ h2 a:hover {
 @media (max-width: 768px) {
   body {
     flex-direction: column; /* sidebar can overlay, main stacks below */
+
+    background-size: 180px;          /* smaller image for mobile */
+    background-position: center 80px; /* adjust position */
+    background-attachment: scroll;    /* fix zoom issue on mobile */
+
+
   }
  .sidebar {
   position: fixed;
