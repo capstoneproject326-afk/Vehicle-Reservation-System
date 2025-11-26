@@ -322,7 +322,7 @@ function renderReservations() {
       div.innerHTML = `
         <h4>${r.name || 'Unknown'} <span class="badge ${r.status || 'pending'}">${r.status || 'pending'}</span></h4>
         <p><strong>Department:</strong> ${r.department || 'N/A'}</p>
-        <p><strong>Category:</strong> ${Array.isArray(r.categories) ? r.categories.join(", ") : (r.categories || 'N/A')}</p>
+   <p><strong>Category:</strong> ${r.category || 'N/A'}</p>
         <p><strong>Purpose:</strong> ${r.purpose || 'N/A'}</p>
         <p><strong>Destination:</strong> ${r.destination || 'N/A'}</p>
         <p><strong>Landmark:</strong> ${r.landmark || 'N/A'}</p>

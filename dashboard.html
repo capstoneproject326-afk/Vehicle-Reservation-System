@@ -281,81 +281,6 @@
 
 
 
-    /* ============================================
-   UNIVERSAL MOBILE FIXES (Paste at the bottom)
-   ============================================ */
-
-/* Make the layout scale properly on all devices */
-html, body {
-  max-width: 100%;
-  overflow-x: hidden;
-}
-
-/* Form container */
-form {
-  width: 100%;
-  max-width: 100%;
-  padding: 16px !important;
-  margin: 0;
-}
-
-/* Heading */
-h2 {
-  font-size: 22px !important;
-  margin-bottom: 15px;
-}
-
-/* Inputs / Selects */
-input, select, textarea {
-  font-size: 14px !important;
-  padding: 10px !important;
-}
-
-/* Vehicle preview image */
-.vehicle-preview img {
-  max-height: 200px !important;
-}
-
-/* Buttons */
-button {
-  width: 100%;
-  padding: 12px !important;
-  font-size: 14px !important;
-}
-
-/* Department & Category side-by-side fix */
-.department-category {
-  flex-direction: column !important;
-  gap: 10px !important;
-}
-
-/* Chatbot adjustments */
-#chatbot {
-  width: 92% !important;
-  right: 4% !important;
-  bottom: 70px !important;
-  max-height: 400px !important;
-}
-
-#chatbotToggle {
-  width: 48px !important;
-  height: 48px !important;
-  font-size: 22px !important;
-}
-
-/* Map popup */
-#mapPopup {
-  width: 94% !important;
-  height: 420px !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-}
-
-#map {
-  height: 340px !important;
-}
-
-
 
 
   </style>
@@ -859,7 +784,6 @@ dateInput.addEventListener("change", updateTimeSlots);
 
       const selectedVehicle=JSON.parse(vehicleSelect.value);
       const selectedDriver=JSON.parse(driverSelect.value);
-      const categories=Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb=>cb.value);
       const passengers=parseInt(document.getElementById("passengers").value);
       const selectedDate=dateInput.value;
       const selectedTimeSlot=timeSlotSelect.value;
@@ -890,7 +814,7 @@ dateInput.addEventListener("change", updateTimeSlots);
 const reservation = {
   name: document.getElementById("name").value,
   department: document.getElementById("department").value,
-  categories: Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value),
+  category: document.getElementById("category").value,
   purpose: document.getElementById("purpose").value,
   destination: document.getElementById("destination").value,
   landmark: document.getElementById("landmark").value,

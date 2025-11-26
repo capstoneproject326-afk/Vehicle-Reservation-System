@@ -160,13 +160,23 @@ onAuthStateChanged(auth, user => {
         if (coords) {
           bounds.push([coords.lat, coords.lng]);
           let iconUrl = '';
-          switch (status) {
-            case 'pending': iconUrl = 'https://cdn-icons-png.flaticon.com/512/833/833472.png'; break;
-            case 'approved': iconUrl = 'https://cdn-icons-png.flaticon.com/512/845/845646.png'; break;
-            case 'ontrip': iconUrl = 'https://cdn-icons-png.flaticon.com/512/3097/3097144.png'; break;
-            case 'completed': iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; break;
-            default: iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png';
-          }
+         switch(status) {
+    case 'pending':
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/2921/2921222.png'; // hourglass / waiting
+        break;
+    case 'approved':
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/845/845646.png'; // check mark / approved
+        break;
+    case 'ontrip':
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/684/684908.png'; // car / in transit
+        break;
+    case 'completed':
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/190/190411.png'; // trophy / completed
+        break;
+    default:
+        iconUrl = 'https://cdn-icons-png.flaticon.com/512/565/565547.png'; // generic info icon
+}
+
           const vehicleIcon = L.icon({ iconUrl, iconSize:[35,35], iconAnchor:[17,35], popupAnchor:[0,-35] });
           L.marker([coords.lat, coords.lng], { icon: vehicleIcon }).addTo(map)
             .bindPopup(`<strong>${data.name}</strong><br>Destination: ${data.destination}<br>Passenger: ${data.passengers||"N/A"}<br>Status: ${data.status}<br>Driver: ${data.driver||"N/A"}`);
