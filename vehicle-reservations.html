@@ -132,7 +132,14 @@ h2 a:hover { color: #60a5fa; }
 
 /* 📱 Mobile Responsive */
 @media (max-width: 768px) {
-  body { flex-direction: column; overflow: auto; }
+  body { flex-direction: column; overflow: auto;
+
+    background-size: 180px;          /* smaller image for mobile */
+    background-position: center 80px; /* adjust position */
+    background-attachment: scroll;    /* fix zoom issue on mobile */
+  
+  
+  }
   .sidebar { transform: translateX(-100%); }
   .sidebar.show { transform: translateX(0); }
   .main { margin-left: 0; }
