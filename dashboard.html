@@ -532,6 +532,27 @@
 }
 
 
+#changePasswordBtn {
+  width: 220px;
+  margin: 12px auto;
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+  background:#4063b6; /* amber/orange */
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 10px;
+  padding: 12px;
+  transition: background 0.3s, transform 0.2s;
+}
+
+#changePasswordBtn:hover {
+  background:#4f7de7;
+  transform: translateY(-2px);
+}
+
+
 </style>
 
 
@@ -539,6 +560,8 @@
   <h2>User Dashboard</h2>
   <button id="logoutBtn">Logout</button>
   <button id="myReservationsBtn">My Reservations</button>
+  <button id="changePasswordBtn">Change Password</button>
+
 
   <form id="reservationForm">
     <label for="name">Name:</label>
@@ -674,6 +697,20 @@
     </table>
     <button id="closePopup" style="margin-top:12px;">Close</button>
   </div>
+
+
+  <!-- Change Password Modal -->
+<div id="changePasswordModal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+     background:#fff; padding:25px; border-radius:15px; width:90%; max-width:400px; z-index:2000; box-shadow:0 8px 30px rgba(0,0,0,0.3);">
+  <h3 style="text-align:center; margin-bottom:15px;">Change Password</h3>
+  <input type="password" id="currentPassword" placeholder="Current Password" style="margin-bottom:12px;">
+  <input type="password" id="newPassword" placeholder="New Password" style="margin-bottom:12px;">
+  <input type="password" id="confirmPassword" placeholder="Confirm New Password" style="margin-bottom:12px;">
+  <div style="text-align:right;">
+    <button id="submitChangePassword" style="background:#178149;color:#fff;padding:8px 14px;border:none;border-radius:8px;margin-right:8px;">Submit</button>
+    <button id="closeChangePassword" style="background:#f43f5e;color:#fff;padding:8px 14px;border:none;border-radius:8px;">Close</button>
+  </div>
+</div>
 
 
   <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -1149,6 +1186,77 @@ document.addEventListener("DOMContentLoaded", () => {
       landmarkInput.value = selectedAddress || `Lat: ${selectedCoords.lat}, Lng: ${selectedCoords.lng}`;
       mapPopup.style.display = 'none';
     });
+
+import { updatePassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+const changePasswordBtn = document.getElementById("changePasswordBtn");
+const changePasswordModal = document.getElementById("changePasswordModal");
+const closeChangePassword = document.getElementById("closeChangePassword");
+const submitChangePassword = document.getElementById("submitChangePassword");
+
+const currentPasswordInput = document.getElementById("currentPassword");
+const newPasswordInput = document.getElementById("newPassword");
+const confirmPasswordInput = document.getElementById("confirmPassword");
+
+// Open modal
+changePasswordBtn.addEventListener("click", () => {
+  changePasswordModal.style.display = "block";
+});
+
+// Close modal
+closeChangePassword.addEventListener("click", () => {
+  changePasswordModal.style.display = "none";
+  currentPasswordInput.value = "";
+  newPasswordInput.value = "";
+  confirmPasswordInput.value = "";
+});
+
+// Submit password change
+submitChangePassword.addEventListener("click", async () => {
+  const user = auth.currentUser;
+  if (!user) {
+    alert("❌ You must be logged in.");
+    return;
+  }
+
+  const currentPassword = currentPasswordInput.value.trim();
+  const newPassword = newPasswordInput.value.trim();
+  const confirmPassword = confirmPasswordInput.value.trim();
+
+  if (!currentPassword || !newPassword || !confirmPassword) {
+    alert("❌ All fields are required.");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    alert("❌ New password and confirm password do not match.");
+    return;
+  }
+
+  try {
+    // Re-authenticate user
+    const credential = EmailAuthProvider.credential(user.email, currentPassword);
+    await reauthenticateWithCredential(user, credential);
+
+    // Update password
+    await updatePassword(user, newPassword);
+
+    alert("✅ Password successfully updated!");
+    changePasswordModal.style.display = "none";
+    currentPasswordInput.value = "";
+    newPasswordInput.value = "";
+    confirmPasswordInput.value = "";
+  } catch (error) {
+    // Better error handling
+    if (error.code === "auth/wrong-password") {
+      alert("❌ Current password is incorrect.");
+    } else if (error.code === "auth/weak-password") {
+      alert("❌ New password is too weak (min 6 characters).");
+    } else {
+      alert("❌ Error: " + error.message);
+    }
+  }
+});
 
 
 
