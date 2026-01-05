@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>CTU Vehicle Reservation</title>
+  
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   
@@ -15,6 +16,9 @@
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 
 
 
@@ -279,8 +283,57 @@
     #map { height:420px; border-radius:8px; width:100%; }
     @media(max-width:720px){ form { padding:18px; } #mapPopup { height:420px; } }
 
+/* ================= MOBILE OPTIMIZATION ================= */
+@media (max-width: 600px) {
+
+  body {
+    padding: 12px;
+  }
+
+  h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+  }
+
+  form {
+    padding: 18px 15px;
+    border-radius: 14px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
+
+  .department-category {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .vehicle-preview img {
+    max-height: 220px;
+  }
+
+  #logoutBtn,
+  #myReservationsBtn {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  button {
+    padding: 11px;
+  }
+}
 
 
+    
 
 
   </style>
@@ -448,6 +501,37 @@
   #chatbotToggle { width: 45px; height: 45px; font-size: 22px; }
 }
 
+
+.map-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .map-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  #openMapBtn {
+    width: 100%;
+  }
+}
+
+
+@media (max-width: 600px) {
+  #mapPopup {
+    width: 95%;
+    height: 85vh;
+  }
+
+  #map {
+    height: 65vh;
+  }
+}
+
+
 </style>
 
 
@@ -492,7 +576,8 @@
 
 
         <label for="landmark">Landmark</label>
-    <div style="display:flex; gap:10px; align-items:center;">
+<div class="map-row">
+
       <input type="text" id="landmark" placeholder="Click map icon to pin..." required />
       <button type="button" id="openMapBtn" style="width:auto;padding:10px 14px;">📍 Pin on Map</button>
     </div>

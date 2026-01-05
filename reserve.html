@@ -35,6 +35,25 @@
       font-size: 18px;
       color: #666;
     }
+
+
+    .register-text {
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+  color: #555;
+}
+
+.register-text a {
+  color: #1e40af;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.register-text a:hover {
+  text-decoration: underline;
+}
+
     button {
       width: 100%; padding: 12px; margin-top: 12px; font-size: 16px;
       background-color: #1e40af; color: white; border: none; border-radius: 6px;
@@ -63,7 +82,12 @@
     </div>
 
     <button id="loginBtn">Login</button>
-    <button onclick="window.location.href='userregistration.html'">Register</button>
+    
+    <p class="register-text">
+  Don’t have an account?
+  <a href="userregistration.html">Register </a>
+</p>
+
     <div id="message"></div>
   </div>
 
